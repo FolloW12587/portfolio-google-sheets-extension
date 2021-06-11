@@ -10,7 +10,27 @@
       .parametr_name{
         margin-right: 20px;
       }
+      .counter{ 
+        margin: 50px;
+      }
     </style>
+
+    <script>
+      function next(){
+        var data = {
+          name: document.getElementById("name").value,
+          desc: document.getElementById("desc").value,
+          goal: document.getElementById("goal").value,
+          term: document.getElementById("term").value,
+          age: document.getElementById("age").value,
+          profit: document.getElementById("profit").value,
+          start_capital: document.getElementById("start_capital").value,
+        }
+
+        google.script.run.newPortfolio2(data);
+        google.script.host.close();
+      }
+    </script>
   </head>
   <body>
     <div class="parametr">
@@ -41,5 +61,7 @@
       <div class="parametr_name">Начальный капитал: </div>
       <input type="text" name="start_capital" id="start_capital" class="parametr_value">
     </div>
+    <div class="counter">1 из 3</div>
+    <button class="button" onclick="next()">Далее</button>
   </body>
 </html>

@@ -3,3 +3,4 @@ package-lock.json
 
 .clasp.json
 
+.DS_Store
