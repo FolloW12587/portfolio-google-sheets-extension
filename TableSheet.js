@@ -21,12 +21,14 @@ TableSheet.prototype.getSheet = function(){
 TableSheet.prototype.createSheet = function(name){
     var ss = SpreadsheetApp.openByUrl(TEMPLATE_URL);
     var templateSheet = ss.getSheetByName(this.name);
-    return SpreadsheetApp.getActive().insertSheet(this.name, {template: templateSheet});
+    var sheet = templateSheet.copyTo(SpreadsheetApp.getActive());
+    sheet.setName(name);
+    return sheet;
 }
 
 TableSheet.prototype.getColumns = function(){
     var col_count = this.sheet.getLastColumn();
-    var names = this.sheet.getSheetValues(1, 1, 1, col_count)[0];
+    var names = this.sheet.getSheetValues(2, 1, 1, col_count)[0];
     for (var i = 0; i < names.length; i ++){
         this.columns[names[i]] = i;
     }
@@ -35,7 +37,7 @@ TableSheet.prototype.getColumns = function(){
 TableSheet.prototype.getData = function () {  
     var rows_count = this.sheet.getLastRow();
     var columns_count = this.sheet.getLastColumn();
-    return this.sheet.getRange(2, 1, rows_count, columns_count).getValues();
+    return this.sheet.getRange(3, 1, rows_count, columns_count).getValues();
 }
 
 TableSheet.prototype.setValue = function(row_i, col_i, value, note=undefined){
@@ -46,7 +48,7 @@ TableSheet.prototype.setValue = function(row_i, col_i, value, note=undefined){
 }
 
 TableSheet.prototype.appendRow = function(data){
-    var last_row = this.sheet.getLastRow();
+    var last_row = this.sheet.getLastRow() + 1;
     this.updateRow(data, last_row);
     return last_row;
 }

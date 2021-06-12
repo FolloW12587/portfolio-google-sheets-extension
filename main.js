@@ -38,21 +38,30 @@ function newPortfolio2(data){
 function createNewPortfolio(data){
     var portfolioTS = new TableSheet("Портфели");
     var options = {
-
+        "Дата создания": new Date(),
+        "Название": data['name'],
+        "Цель (Накопить)": data['goal'],
+        "Для чего портфель": data['desc'],
+        "Срок цели": data['term'],
+        "Ожидаемая доходность": data['profit'],
+        "Возраст распаковщика": data['age'],
+        "Первый платеж": data['start_capital'],
+        "Валюта портфеля": data['currency']
     };
     
-    // portfolioTS.appendRow(data)
+    portfolioTS.appendRow(options);
 }
 
 function checkExcistingTables(){
     var sheets = SpreadsheetApp.getActive().getSheets();
     for (var i in NECESSARY_TABLES){
-        var filtered = sheets.filter((sheet) => {sheet.getName() == NECESSARY_TABLES[i]});
+        var filtered = sheets.filter((sheet) => sheet.getName() == NECESSARY_TABLES[i]);
         if (filtered.length == 0){
             errorHandler("Документ не настроен", "Отсутствует таблица "+ NECESSARY_TABLES[i] +". Нажмите на пункт \"Настроить документ\" в выпадающем списке расширения.");
             return false;
         }
     }
+    return true;
 }
 
 function errorHandler(error_type, message){

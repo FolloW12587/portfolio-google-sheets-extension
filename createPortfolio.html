@@ -10,8 +10,11 @@
       .parametr_name{
         margin-right: 20px;
       }
+      .parametr_postfix{
+        margin-left: 10px
+      }
       .counter{ 
-        margin: 50px;
+        margin: 20px;
       }
     </style>
 
@@ -21,6 +24,7 @@
           name: document.getElementById("name").value,
           desc: document.getElementById("desc").value,
           goal: document.getElementById("goal").value,
+          currency: document.getElementById("currency").value,
           term: document.getElementById("term").value,
           age: document.getElementById("age").value,
           profit: document.getElementById("profit").value,
@@ -42,26 +46,37 @@
       <input type="text" name="desc" id="desc" class="parametr_value">
     </div>
     <div class="parametr">
-      <div class="parametr_name">Цель: </div>
+      <div class="parametr_name">Валюта: </div>
+      <select name="currency" id="currency">
+        <option value="RUB">Рубль</option>
+        <option value="USD"selected>Доллар</option>
+        <option value="EUR">Евро</option>
+      </select>
+    </div>
+    <div class="parametr">
+      <div class="parametr_name">Цель (Накопить): </div>
       <input type="text" name="goal" id="goal" class="parametr_value">
     </div>
     <div class="parametr">
-      <div class="parametr_name">Срок: </div>
-      <input type="text" name="term" id="term" class="parametr_value">
+      <div class="parametr_name">Срок (лет): </div>
+      <input type="text" size="3" name="term" id="term" class="parametr_value"> 
+      <div class="parametr_postfix">лет</div>
     </div>
     <div class="parametr">
       <div class="parametr_name">Возраст: </div>
-      <input type="text" name="age" id="age" class="parametr_value">
+      <input type="text" size="3" name="age" id="age" class="parametr_value"> 
+      <div class="parametr_postfix">года</div>
     </div>
     <div class="parametr">
       <div class="parametr_name">Планируемая доходность: </div>
-      <input type="text" name="profit" id="profit" class="parametr_value">
+      <input type="text" size="5" name="profit" id="profit" class="parametr_value"> 
+      <div class="parametr_postfix">%</div>
     </div>
     <div class="parametr">
       <div class="parametr_name">Начальный капитал: </div>
       <input type="text" name="start_capital" id="start_capital" class="parametr_value">
     </div>
-    <div class="counter">1 из 3</div>
+    <div class="counter">1 из 4</div>
     <button class="button" onclick="next()">Далее</button>
   </body>
 </html>
