@@ -32,7 +32,29 @@ function newPortfolio2(data){
         .setWidth(400)
         .setHeight(300);
     SpreadsheetApp.getUi()
-        .showModalDialog(html, 'Создать портфель');
+        .showModalDialog(html, 'Диверсификация по типам ценных бумаг');
+}
+
+function newPortfolio3(data, symbol_types){
+    updateObjectsDiversification(data, symbol_types);
+    var html = HtmlService.createHtmlOutputFromFile('createPortfolio3')
+        .setWidth(400)
+        .setHeight(300);
+    SpreadsheetApp.getUi()
+        .showModalDialog(html, 'Диверсификация по странам');
+}
+
+function newPortfolio4(data, countries){
+    updateObjectsDiversification(data, countries);
+    var html = HtmlService.createHtmlOutputFromFile('createPortfolio4')
+        .setWidth(400)
+        .setHeight(300);
+    SpreadsheetApp.getUi()
+        .showModalDialog(html, 'Диверсификация по секторам экономики');
+}
+
+function newPortfolioLast(data, economy_sectors){
+    updateObjectsDiversification(data, economy_sectors);
 }
 
 function createNewPortfolio(data){
@@ -50,6 +72,34 @@ function createNewPortfolio(data){
     };
     
     portfolioTS.appendRow(options);
+}
+
+function updateObjectsDiversification(data, object){
+    var portfolioTS = new TableSheet("Портфели");
+    var columns = Object.keys(portfolioTS.columns);
+    var options = {};
+    for (var i in object){
+        var st = object[i];
+        if (columns.indexOf(st['name']) >-1){
+            options[st['name']] = data[st['id']];
+        }
+    }
+
+    portfolioTS.updateRow(options, portfolioTS.sheet.getLastRow());
+}
+
+function updateSymbolTypeDiversification(data, symbol_types){
+    var portfolioTS = new TableSheet("Портфели");
+    var columns = Object.keys(portfolioTS.columns);
+    var options = {};
+    for (var i in symbol_types){
+        var st = symbol_types[i];
+        if (columns.indexOf(st['name']) >-1){
+            options[st['name']] = data[st['id']];
+        }
+    }
+
+    portfolioTS.updateRow(options, portfolioTS.sheet.getLastRow());
 }
 
 function checkExcistingTables(){

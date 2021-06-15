@@ -21,13 +21,13 @@
         width: 25px;
         height: 25px;
       }
-      .symbol_types_container, .symbol_types_diversifications_container{
+      .countries_container, .country_diversifications_container{
         margin: 10px;
       }
-      .symbol_type{
+      .country{
         margin-bottom: 5px;
       }
-      .symbol_type_input{
+      .country_input{
         margin-left: 5px;
       }
     </style>
@@ -38,11 +38,11 @@
         var data = {};
         var sum = 0;
 
-        for (var i in window.symbol_types){
-          var st = window.symbol_types[i];
-          var st_input_value = parseFloat(document.getElementById(st['id']).value);
-          data[st['id']] = st_input_value;
-          sum += st_input_value;
+        for (var i in window.countries){
+          var country = window.countries[i];
+          var country_input_value = parseFloat(document.getElementById(country['id']).value);
+          data[country['id']] = country_input_value;
+          sum += country_input_value;
         }
 
         if (sum !== 100){
@@ -50,62 +50,62 @@
           return;
         }
 
-        google.script.run.newPortfolio3(data, window.symbol_types);
+        google.script.run.newPortfolio3(data, window.countries);
         google.script.host.close();
       }
       
       function document_loaded(){
-        get_symbol_types();
-        get_symbol_types_diversifications();
+        get_countries();
+        get_country_diversifications();
       }
       
-      function get_symbol_types(){
+      function get_countries(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/portfolio_symbol_type';  // TODO: change host
+        const url='http://localhost:8000/quotes/country';  // TODO: change host
         Http.open("GET", url);
         Http.send();
 
         Http.onreadystatechange = function(e) {
           if (this.readyState == 4){
             console.log(this.responseText);
-            update_symbol_types(JSON.parse(this.responseText));
+            update_countries(JSON.parse(this.responseText));
           }
         }
       }
 
-      function get_symbol_types_diversifications(){
+      function get_country_diversifications(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/symbol_type_diversification';  // TODO: change host
+        const url='http://localhost:8000/quotes/country_diversification';  // TODO: change host
         Http.open("GET", url);
         Http.send();
 
         Http.onreadystatechange = function(e) {
           if (this.readyState == 4){
             console.log(this.responseText);
-            update_symbol_types_diversification(JSON.parse(this.responseText));
+            update_countries_diversification(JSON.parse(this.responseText));
           }
         }
       }
 
-      function update_symbol_types(symbol_types){
-        window.symbol_types = symbol_types;
+      function update_countries(countries){
+        window.countries = countries;
         var html = '';
-        for (var i in symbol_types){
-          var symbol_type = symbol_types[i];
+        for (var i in countries){
+          var country = countries[i];
 
-          html += "<div class='symbol_type'><div class='symbol_type_name'>" + symbol_type['name'] +": <input class='symbol_type_input' id='" + symbol_type['id'] + "' name='" + symbol_type['id'] + "' size='5' value='0'>%</div>";
+          html += "<div class='country'><div class='country_name'>" + country['name'] +": <input class='country_input' id='" + country['id'] + "' name='" + country['id'] + "' size='5' value='0'>%</div>";
         }
-        var stc = document.getElementsByClassName("symbol_types_container")[0];
+        var stc = document.getElementsByClassName("countries_container")[0];
         stc.innerHTML = html;
 
-        document.querySelector(".symbol_type_input").addEventListener("change", (e) => {
-          document.getElementById("symbol_types_diversification").value = 0;
+        document.querySelector(".country_input").addEventListener("change", (e) => {
+          document.getElementsByClassName("countries_diversification")[0].value = 0;
         })
       }
 
-      function update_symbol_types_diversification(diversifications){
+      function update_countries_diversification(diversifications){
         window.diversifications = diversifications;
-        var html = 'Варианты диверсификации: <select name="symbol_types_diversification" id="symbol_types_diversification" class="symbol_types_diversification">';
+        var html = 'Варианты диверсификации: <select name="countries_diversification" class="countries_diversification">';
         html += '<option value="0" selected>Custom</option>';
         for (var i in diversifications){
           var diversification = diversifications[i];
@@ -113,10 +113,10 @@
           html += "<option value='"+diversification['id']+"'>"+diversification['name']+"</option>";
         }
         html += '</select>';
-        var stdc = document.getElementsByClassName("symbol_types_diversifications_container")[0];
+        var stdc = document.getElementsByClassName("country_diversifications_container")[0];
         stdc.innerHTML = html;
-        document.querySelector(".symbol_types_diversification").addEventListener("change", (e) => {
-          if (window.symbol_types === undefined){
+        document.querySelector(".countries_diversification").addEventListener("change", (e) => {
+          if (window.countries === undefined){
             e.target.value = 0;
             return;
           }
@@ -129,14 +129,14 @@
       function accept_diversification(id){
         var diversification = window.diversifications.filter((d) => d['id'] == id)[0];
         
-        for (var i in window.symbol_types){
-          var st = window.symbol_types[i];
+        for (var i in window.countries){
+          var country = window.countries[i];
 
-          var dst = diversification['rates'].filter((rate) => shallowEqual(rate['symbolType'], st));
+          var dst = diversification['rates'].filter((rate) => shallowEqual(rate['country'], country));
           if (dst.length > 0){
-            document.getElementById(st['id']).value = dst[0]['rate']*100;
+            document.getElementById(country['id']).value = dst[0]['rate']*100;
           } else {
-            document.getElementById(st['id']).value = 0;
+            document.getElementById(country['id']).value = 0;
           }
         }
       }
@@ -162,13 +162,13 @@
     </script>
   </head>
   <body>
-    <div class="symbol_types_diversifications_container">
+    <div class="country_diversifications_container">
       Варианты диверсификации: <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
     </div>
-    <div class="symbol_types_container">
+    <div class="countries_container">
       <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
     </div>
-    <div class="counter">2 из 4</div>
+    <div class="counter">3 из 4</div>
     <button class="button" onclick="next()">Далее</button>
   </body>
 </html>

@@ -21,13 +21,13 @@
         width: 25px;
         height: 25px;
       }
-      .symbol_types_container, .symbol_types_diversifications_container{
+      .economy_sectors_container, .economy_sectors_diversifications_container{
         margin: 10px;
       }
-      .symbol_type{
+      .economy_sector{
         margin-bottom: 5px;
       }
-      .symbol_type_input{
+      .economy_sector_input{
         margin-left: 5px;
       }
     </style>
@@ -38,11 +38,11 @@
         var data = {};
         var sum = 0;
 
-        for (var i in window.symbol_types){
-          var st = window.symbol_types[i];
-          var st_input_value = parseFloat(document.getElementById(st['id']).value);
-          data[st['id']] = st_input_value;
-          sum += st_input_value;
+        for (var i in window.economy_sectors){
+          var es = window.economy_sectors[i];
+          var ec_input_value = parseFloat(document.getElementById(es['id']).value);
+          data[es['id']] = ec_input_value;
+          sum += ec_input_value;
         }
 
         if (sum !== 100){
@@ -50,62 +50,62 @@
           return;
         }
 
-        google.script.run.newPortfolio3(data, window.symbol_types);
+        google.script.run.newPortfolioLast(data, window.economy_sectors);
         google.script.host.close();
       }
       
       function document_loaded(){
-        get_symbol_types();
-        get_symbol_types_diversifications();
+        get_economy_sectors();
+        get_economy_sectors_diversifications();
       }
       
-      function get_symbol_types(){
+      function get_economy_sectors(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/portfolio_symbol_type';  // TODO: change host
+        const url='http://localhost:8000/quotes/economy_sector';  // TODO: change host
         Http.open("GET", url);
         Http.send();
 
         Http.onreadystatechange = function(e) {
           if (this.readyState == 4){
             console.log(this.responseText);
-            update_symbol_types(JSON.parse(this.responseText));
+            update_economy_sectors(JSON.parse(this.responseText));
           }
         }
       }
 
-      function get_symbol_types_diversifications(){
+      function get_economy_sectors_diversifications(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/symbol_type_diversification';  // TODO: change host
+        const url='http://localhost:8000/quotes/economy_sector_diversification';  // TODO: change host
         Http.open("GET", url);
         Http.send();
 
         Http.onreadystatechange = function(e) {
           if (this.readyState == 4){
             console.log(this.responseText);
-            update_symbol_types_diversification(JSON.parse(this.responseText));
+            update_economy_sectors_diversification(JSON.parse(this.responseText));
           }
         }
       }
 
-      function update_symbol_types(symbol_types){
-        window.symbol_types = symbol_types;
+      function update_economy_sectors(economy_sectors){
+        window.economy_sectors = economy_sectors;
         var html = '';
-        for (var i in symbol_types){
-          var symbol_type = symbol_types[i];
+        for (var i in economy_sectors){
+          var economy_sector = economy_sectors[i];
 
-          html += "<div class='symbol_type'><div class='symbol_type_name'>" + symbol_type['name'] +": <input class='symbol_type_input' id='" + symbol_type['id'] + "' name='" + symbol_type['id'] + "' size='5' value='0'>%</div>";
+          html += "<div class='economy_sector'><div class='economy_sector_name'>" + economy_sector['name'] +": <input class='economy_sector_input' id='" + economy_sector['id'] + "' name='" + economy_sector['id'] + "' size='5' value='0'>%</div>";
         }
-        var stc = document.getElementsByClassName("symbol_types_container")[0];
+        var stc = document.getElementsByClassName("economy_sectors_container")[0];
         stc.innerHTML = html;
 
-        document.querySelector(".symbol_type_input").addEventListener("change", (e) => {
-          document.getElementById("symbol_types_diversification").value = 0;
+        document.querySelector(".economy_sector_input").addEventListener("change", (e) => {
+          document.getElementById("economy_sectors_diversification").value = 0;
         })
       }
 
-      function update_symbol_types_diversification(diversifications){
+      function update_economy_sectors_diversification(diversifications){
         window.diversifications = diversifications;
-        var html = 'Варианты диверсификации: <select name="symbol_types_diversification" id="symbol_types_diversification" class="symbol_types_diversification">';
+        var html = 'Варианты диверсификации: <select name="economy_sectors_diversification" id="economy_sectors_diversification" class="economy_sectors_diversification">';
         html += '<option value="0" selected>Custom</option>';
         for (var i in diversifications){
           var diversification = diversifications[i];
@@ -113,10 +113,10 @@
           html += "<option value='"+diversification['id']+"'>"+diversification['name']+"</option>";
         }
         html += '</select>';
-        var stdc = document.getElementsByClassName("symbol_types_diversifications_container")[0];
+        var stdc = document.getElementsByClassName("economy_sectors_diversifications_container")[0];
         stdc.innerHTML = html;
-        document.querySelector(".symbol_types_diversification").addEventListener("change", (e) => {
-          if (window.symbol_types === undefined){
+        document.querySelector(".economy_sectors_diversification").addEventListener("change", (e) => {
+          if (window.economy_sectors === undefined){
             e.target.value = 0;
             return;
           }
@@ -129,14 +129,14 @@
       function accept_diversification(id){
         var diversification = window.diversifications.filter((d) => d['id'] == id)[0];
         
-        for (var i in window.symbol_types){
-          var st = window.symbol_types[i];
+        for (var i in window.economy_sectors){
+          var es = window.economy_sectors[i];
 
-          var dst = diversification['rates'].filter((rate) => shallowEqual(rate['symbolType'], st));
+          var dst = diversification['rates'].filter((rate) => shallowEqual(rate['economySector'], es));
           if (dst.length > 0){
-            document.getElementById(st['id']).value = dst[0]['rate']*100;
+            document.getElementById(es['id']).value = dst[0]['rate']*100;
           } else {
-            document.getElementById(st['id']).value = 0;
+            document.getElementById(es['id']).value = 0;
           }
         }
       }
@@ -162,13 +162,13 @@
     </script>
   </head>
   <body>
-    <div class="symbol_types_diversifications_container">
+    <div class="economy_sectors_diversifications_container">
       Варианты диверсификации: <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
     </div>
-    <div class="symbol_types_container">
+    <div class="economy_sectors_container">
       <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
     </div>
-    <div class="counter">2 из 4</div>
+    <div class="counter">4 из 4</div>
     <button class="button" onclick="next()">Далее</button>
   </body>
 </html>
