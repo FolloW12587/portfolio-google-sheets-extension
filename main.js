@@ -3,103 +3,36 @@ function onOpen(){
     ui.createAddonMenu()
         .addItem("Настроить документ", "startWorking")
         .addItem("Добавить портфель", "newPortfolio")
+        .addItem("Купить актив", "buySymbols")
         .addToUi()
 }
 
-NECESSARY_TABLES = ["Дашборд", "Портфели", "Тикеры", "Сделки"];
+NECESSARY_TABLES = ["Портфели", "Тикеры", "Сделки"];
+
+
+/**
+ * Get the price of symbol by its id.
+ *
+ * @param {symbol_id} input The symbol id that you want to get the price of.
+ * @return The price of symbol.
+ * @customfunction
+ */
+function YARDOFFSYMBOL(symbol_id){
+    var backendAPI = new BackendAPI();
+
+    var symbols = backendAPI.getSymbolBySymbolId(symbol_id);
+    if (symbols.length < 1){
+        alert("Указанного актива \""+symbol_id+"\" не существует!");
+        return 0;
+    }
+    var symbol = symbols[0];
+    return parseFloat(symbol["price"]);
+}
 
 function startWorking(){
     for (var i in NECESSARY_TABLES){
         new TableSheet(NECESSARY_TABLES[i]);
     }
-}
-
-function newPortfolio(){
-    if (!checkExcistingTables()){
-        return;
-    }
-
-    var html = HtmlService.createHtmlOutputFromFile('createPortfolio')
-        .setWidth(400)
-        .setHeight(300);
-    SpreadsheetApp.getUi()
-        .showModalDialog(html, 'Создать портфель');
-}
-
-function newPortfolio2(data){
-    createNewPortfolio(data);
-    var html = HtmlService.createHtmlOutputFromFile('createPortfolio2')
-        .setWidth(400)
-        .setHeight(300);
-    SpreadsheetApp.getUi()
-        .showModalDialog(html, 'Диверсификация по типам ценных бумаг');
-}
-
-function newPortfolio3(data, symbol_types){
-    updateObjectsDiversification(data, symbol_types);
-    var html = HtmlService.createHtmlOutputFromFile('createPortfolio3')
-        .setWidth(400)
-        .setHeight(300);
-    SpreadsheetApp.getUi()
-        .showModalDialog(html, 'Диверсификация по странам');
-}
-
-function newPortfolio4(data, countries){
-    updateObjectsDiversification(data, countries);
-    var html = HtmlService.createHtmlOutputFromFile('createPortfolio4')
-        .setWidth(400)
-        .setHeight(300);
-    SpreadsheetApp.getUi()
-        .showModalDialog(html, 'Диверсификация по секторам экономики');
-}
-
-function newPortfolioLast(data, economy_sectors){
-    updateObjectsDiversification(data, economy_sectors);
-}
-
-function createNewPortfolio(data){
-    var portfolioTS = new TableSheet("Портфели");
-    var options = {
-        "Дата создания": new Date(),
-        "Название": data['name'],
-        "Цель (Накопить)": data['goal'],
-        "Для чего портфель": data['desc'],
-        "Срок цели": data['term'],
-        "Ожидаемая доходность": data['profit'],
-        "Возраст распаковщика": data['age'],
-        "Первый платеж": data['start_capital'],
-        "Валюта портфеля": data['currency']
-    };
-    
-    portfolioTS.appendRow(options);
-}
-
-function updateObjectsDiversification(data, object){
-    var portfolioTS = new TableSheet("Портфели");
-    var columns = Object.keys(portfolioTS.columns);
-    var options = {};
-    for (var i in object){
-        var st = object[i];
-        if (columns.indexOf(st['name']) >-1){
-            options[st['name']] = data[st['id']];
-        }
-    }
-
-    portfolioTS.updateRow(options, portfolioTS.sheet.getLastRow());
-}
-
-function updateSymbolTypeDiversification(data, symbol_types){
-    var portfolioTS = new TableSheet("Портфели");
-    var columns = Object.keys(portfolioTS.columns);
-    var options = {};
-    for (var i in symbol_types){
-        var st = symbol_types[i];
-        if (columns.indexOf(st['name']) >-1){
-            options[st['name']] = data[st['id']];
-        }
-    }
-
-    portfolioTS.updateRow(options, portfolioTS.sheet.getLastRow());
 }
 
 function checkExcistingTables(){
@@ -112,6 +45,21 @@ function checkExcistingTables(){
         }
     }
     return true;
+}
+
+function getExistingPortgolios(){
+    var portfolioTS = new TableSheet("Портфели", 3);
+
+    var data = portfolioTS.getData();
+    var output = [];
+    for (var i in data){
+        var temp = {
+            "id": data[i][portfolioTS.columns["ID"]],
+            "name": data[i][portfolioTS.columns["Название"]],
+        }
+        output.push(temp);
+    }
+    return output;
 }
 
 function errorHandler(error_type, message){

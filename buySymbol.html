@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+    <style>
+      .ticker_container{
+        display: flex;
+      }
+      .ticker_input{
+        margin: 0 10px;
+      }
+      .loading{
+        margin-left: 10px;
+        width: 25px;
+        height: 25px;
+      }
+      .symbol_info{
+        margin: 10px;
+      }
+      .parameter{
+        display: flex;
+        margin: 10px;
+      }
+      .parameter_value{
+        margin-left: 5px;
+      }
+      .symbols_select_container{
+        margin: 5px;
+      }
+      .portfolio{
+        display: flex;
+      }
+    </style>
+
+    <script>
+      function buy(){
+        const select = document.getElementById("symbol_select");
+        if (select == null || select.value == "0"){
+          alert("Выберете актив, который хотите приобрести!");
+          return;
+        }
+
+        const symbol = window.symbols.filter((symbol) => symbol['symbolId'] == select.value)[0];
+
+        const price = parseFloat(document.getElementById("price"));
+        const count = parseInt(document.getElementById("count"));
+        const portfolio_id = parseInt(document.getElementById("portfolio"));
+
+        if (count < 1){
+          alert("Приобретите хотя бы одну бумагу!");
+          return;
+        }
+        if (portfolio_id == null || portfolio_id == ""){
+          alert("Выберете портфель, в который добавить бумагу!");
+          return;
+        }
+
+        var data = {
+          "symbol": symbol,
+          "price": price,
+          "count": count,
+          "portfolio_id": portfolio_id
+        }
+
+        google.script.run.applySymbols(data);
+        google.script.host.close();
+      }
+
+      function findSymbols(){
+        var ticker = document.getElementById("ticker").value;
+        if (ticker == null || ticker == ""){
+          alert("Значение тикера не должно быть пустым!");
+          return;
+        }
+
+        document.getElementsByClassName("symbols_select_container")[0]
+          .innerHTML = '<img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">';
+        getSymbols(ticker);
+      }
+
+      function getSymbols(ticker){
+        const Http = new XMLHttpRequest();
+        var url='http://localhost:8000/quotes/symbol?ticker=' + encodeURIComponent(ticker);  // TODO: change host
+
+        Http.open("GET", url);
+        Http.send();
+
+        Http.onreadystatechange = function(e) {
+          if (this.readyState == 4){
+            console.log(this.responseText);
+            updateSymbols(JSON.parse(this.responseText));
+          }
+        }
+      }
+
+      function updateSymbols(symbols){
+        window.symbols = symbols;
+        if (symbols.length < 1){
+          document.getElementsByClassName("symbols_select_container")[0]
+            .innerHTML = "<div class='symbol_info'>По введенному тикеру ничего не найдено</div>";
+          return;
+        }
+        var html = "<div class='symbol_info'>Найдено "+ symbols.length +" ценных бумаг по заданному тикеру</div>";
+        html += "<select class='symbol_select' id='symbol_select'>";
+        html += "<option value='0' disabled selected>Выбирете актив для покупки</option>";
+        for (var i in symbols){
+          const symbol = symbols[i];
+
+          html += "<option value='"+symbol['symbolId']+"'>["+symbol['exchange']+"] "+symbol['ticker']+" "+symbol['name']+"</option>";
+        }
+        html += "</select>";
+
+        document.getElementsByClassName("symbols_select_container")[0]
+          .innerHTML = html;
+        document.getElementById("symbol_select").addEventListener("change", function(e){
+          updateSymbolInfo();
+        });
+      }
+
+      function updateSymbolInfo(){
+        const symbol_id = document.getElementById("symbol_select").value;
+        const symbol = window.symbols.filter((symbol) => symbol['symbolId'] == symbol_id)[0];
+
+        var type = symbol['type']['name'] == null ? symbol['type']['code'] : symbol['type']['name']
+
+        var html = "<div class='parameter'><div class='parameter_name'>Тикер:</div><div class='parameter_value'>"+symbol['ticker']+"</div></div>";
+        html += "<div class='parameter'><div class='parameter_name'>Наименование:</div><div class='parameter_value'>"+symbol['name']+"</div></div>";
+        html += "<div class='parameter'><div class='parameter_name'>Биржа:</div><div class='parameter_value'>"+symbol['exchange']+"</div></div>";
+        html += "<div class='parameter'><div class='parameter_name'>Тип:</div><div class='parameter_value'>"+type+"</div></div>";
+        html += "<div class='parameter'><div class='parameter_name'>Валюта:</div><div class='parameter_value'>"+symbol['currency']['code']+"</div></div>";
+        html += "<div class='parameter'><div class='parameter_name'>Цена:</div><input class='parameter_value' id='price' value='"+symbol['price']+"'></div>";
+        html += "<div class='parameter'><div class='parameter_name'>Количество:</div><input class='parameter_value' id='count' value='1'></div>";
+
+        document.getElementsByClassName("symbol")[0].innerHTML = html;
+      }
+
+      function applyPortfolios(portfolios){
+        var html = "";
+        for (var i in portfolios){
+          var portfolio = portfolios[i];
+          
+          if (portfolio['id'] == ''){
+            continue;
+          }
+          html += "<option value='"+portfolio['id']+"'>["+portfolio['id']+"] "+portfolio['name']+"</option>";
+        }
+
+        document.getElementById("portfolio").innerHTML = html;
+        var parent = document.getElementsByClassName("portfolio")[0];
+        parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+
+      function document_loaded(){
+        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortgolios()
+      }
+      
+      document.addEventListener("DOMContentLoaded",  document_loaded);
+    </script>
+  </head>
+  <body>
+    <div class="portfolio">
+      <div class="portfolio_label">Выберете портфель:</div>
+      <select name="protfolio" id="portfolio"></select>
+      <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
+    <div class="ticker_container">
+      <div class="ticker_title">Введите тикер:</div>
+      <input class="ticker_input" type="text" name="ticker" id="ticker">
+      <button class="button ticker_button" onclick="findSymbols()">Найти</button>
+    </div>
+    <div class="symbols_select_container">
+    
+    </div>
+    <div class="symbol">
+
+    </div>
+    <button class="button" onclick="buy()">Купить</button>
+  </body>
+</html>

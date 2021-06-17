@@ -2,12 +2,25 @@
 
 class BackendAPI{
     constructor(){
-        this.url = "http://localhost/quotes/";  // TODO: change this
+        this.url = "http://localhost:8000/quotes/";  // TODO: change this
     }
 
     getSymbolsByTicker(ticker){
         var endpoint = "symbol";
         var data = "ticker=" + encodeURIComponent(ticker);
+
+        var response = this.makeRequest(endpoint, data);
+        if (response.getResponseCode() !== 200){
+            errorHandler("Can't connect to server", response.getContextText());
+            return;
+        }
+
+        return JSON.parse(response.getContextText());
+    }
+
+    getSymbolBySymbolId(symbol_id){
+        var endpoint = "symbol";
+        var data = "symbolId=" + encodeURIComponent(symbol_id);
 
         var response = this.makeRequest(endpoint, data);
         if (response.getResponseCode() !== 200){

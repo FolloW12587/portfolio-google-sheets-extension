@@ -29,6 +29,8 @@
           age: document.getElementById("age").value,
           profit: document.getElementById("profit").value,
           start_capital: document.getElementById("start_capital").value,
+          broker: document.getElementById("broker").value,
+          period: document.getElementById("period").value,
         }
 
         google.script.run.newPortfolio2(data);
@@ -75,6 +77,18 @@
     <div class="parametr">
       <div class="parametr_name">Начальный капитал: </div>
       <input type="text" name="start_capital" id="start_capital" class="parametr_value">
+    </div>
+    <div class="parametr">
+      <div class="parametr_name">Брокер: </div>
+      <input type="text" name="broker" id="broker" class="parametr_value">
+    </div>
+    <div class="parametr">
+      <div class="parametr_name">Периодичность внесения: </div>
+      <select name="period" id="period">
+        <option value="Раз в неделю">Раз в неделю</option>
+        <option value="Раз в месяц" selected>Раз в месяц</option>
+        <option value="Каждый день">Каждый день</option>
+      </select>
     </div>
     <div class="counter">1 из 4</div>
     <button class="button" onclick="next()">Далее</button>
