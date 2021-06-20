@@ -47,15 +47,18 @@ function checkExcistingTables(){
     return true;
 }
 
-function getExistingPortgolios(){
-    var portfolioTS = new TableSheet("Портфели", 3);
+function getExistingPortfolios(){
+    var portfoliosListTS = new TableSheet("Портфели", 3);
 
-    var data = portfolioTS.getData();
+    var data = portfoliosListTS.getData();
     var output = [];
     for (var i in data){
         var temp = {
-            "id": data[i][portfolioTS.columns["ID"]],
-            "name": data[i][portfolioTS.columns["Название"]],
+            "id": data[i][portfoliosListTS.columns["ID"]],
+            "name": data[i][portfoliosListTS.columns["Название"]],
+        }
+        if (temp['id'] == ''){
+            continue;
         }
         output.push(temp);
     }

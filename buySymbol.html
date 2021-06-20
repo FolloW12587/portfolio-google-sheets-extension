@@ -30,6 +30,14 @@
       .portfolio{
         display: flex;
       }
+      .diversifications{
+        margin: 10px;
+        display: none;
+      }
+      .diversification_obj{
+        margin-bottom: 5px;
+        display: flex;
+      }
     </style>
 
     <script>
@@ -42,9 +50,16 @@
 
         const symbol = window.symbols.filter((symbol) => symbol['symbolId'] == select.value)[0];
 
-        const price = parseFloat(document.getElementById("price"));
-        const count = parseInt(document.getElementById("count"));
-        const portfolio_id = parseInt(document.getElementById("portfolio"));
+        const price = parseFloat(document.getElementById("price").value);
+        const count = parseInt(document.getElementById("count").value);
+        const portfolio_id = parseInt(document.getElementById("portfolio").value);
+        const type_id = parseInt(document.getElementById("diversification_type").value);
+        const country_id = parseInt(document.getElementById("diversification_country").value);
+        const economy_sector_id = parseInt(document.getElementById("diversification_economy").value);
+
+        const type = window.symbol_types.filter((st) => st['id'] == type_id);
+        const country = window.countries.filter((country) => country['id'] == country_id);
+        const economy_sector = window.economy_sectors.filter((es) => es['id'] == economy_sector_id);
 
         if (count < 1){
           alert("Приобретите хотя бы одну бумагу!");
@@ -55,12 +70,20 @@
           return;
         }
 
+        if (type.length == 0 || country.length == 0 || economy_sector.length == 0){
+          alert("Нужно выбрать все варианты диверсификации!");
+          return;
+        }
+
         var data = {
           "symbol": symbol,
           "price": price,
           "count": count,
-          "portfolio_id": portfolio_id
-        }
+          "portfolio_id": portfolio_id,
+          "type": type[0]['name'],
+          "country": country[0]['name'],
+          "economy_sector": economy_sector[0]['name'],
+        };
 
         google.script.run.applySymbols(data);
         google.script.host.close();
@@ -72,7 +95,8 @@
           alert("Значение тикера не должно быть пустым!");
           return;
         }
-
+        document.getElementsByClassName("symbol")[0].innerHTML = "";
+        document.getElementsByClassName("diversifications")[0].style.display = "none";
         document.getElementsByClassName("symbols_select_container")[0]
           .innerHTML = '<img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">';
         getSymbols(ticker);
@@ -132,6 +156,7 @@
         html += "<div class='parameter'><div class='parameter_name'>Количество:</div><input class='parameter_value' id='count' value='1'></div>";
 
         document.getElementsByClassName("symbol")[0].innerHTML = html;
+        document.getElementsByClassName("diversifications")[0].style.display = "block";
       }
 
       function applyPortfolios(portfolios){
@@ -139,9 +164,6 @@
         for (var i in portfolios){
           var portfolio = portfolios[i];
           
-          if (portfolio['id'] == ''){
-            continue;
-          }
           html += "<option value='"+portfolio['id']+"'>["+portfolio['id']+"] "+portfolio['name']+"</option>";
         }
 
@@ -150,8 +172,93 @@
         parent.removeChild(parent.getElementsByTagName("img")[0]);
       }
 
+      function get_symbol_types(){
+        const Http = new XMLHttpRequest();
+        const url='http://localhost:8000/quotes/portfolio_symbol_type';  // TODO: change host
+        Http.open("GET", url);
+        Http.send();
+
+        Http.onreadystatechange = function(e) {
+          if (this.readyState == 4){
+            console.log(this.responseText);
+            update_symbol_types(JSON.parse(this.responseText));
+          }
+        }
+      }
+
+      function update_symbol_types(symbol_types){
+        window.symbol_types = symbol_types;
+        var html = '';
+        for (var i in symbol_types){
+          var symbol_type = symbol_types[i];
+
+          html += "<option value='" + symbol_type['id'] + "'>" + symbol_type['name'] +"</option>";
+        }
+        document.getElementById("diversification_type").innerHTML = html;
+        var parent = document.getElementsByClassName("diversification_type")[0];
+        parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+
+      function get_countries(){
+        const Http = new XMLHttpRequest();
+        const url='http://localhost:8000/quotes/country';  // TODO: change host
+        Http.open("GET", url);
+        Http.send();
+        
+        Http.onreadystatechange = function(e) {
+          if (this.readyState == 4){
+            console.log(this.responseText);
+            update_countries(JSON.parse(this.responseText));
+          }
+        }
+      }
+      
+      function update_countries(countries){
+        window.countries = countries;
+        var html = '';
+        for (var i in countries){
+          var country = countries[i];
+          
+          html += "<option value='" + country['id'] + "'>" + country['name'] +"</option>";
+        }
+        document.getElementById("diversification_country").innerHTML = html;
+        var parent = document.getElementsByClassName("diversification_country")[0];
+        parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+
+      function get_economy_sectors(){
+        const Http = new XMLHttpRequest();
+        const url='http://localhost:8000/quotes/economy_sector';  // TODO: change host
+        Http.open("GET", url);
+        Http.send();
+
+        Http.onreadystatechange = function(e) {
+          if (this.readyState == 4){
+            console.log(this.responseText);
+            update_economy_sectors(JSON.parse(this.responseText));
+          }
+        }
+      }
+
+      function update_economy_sectors(economy_sectors){
+        window.economy_sectors = economy_sectors;
+        var html = '';
+        for (var i in economy_sectors){
+          var economy_sector = economy_sectors[i];
+
+          html += "<option value='" + economy_sector['id'] + "'>" + economy_sector['name'] +"</option>";
+        }
+
+        document.getElementById("diversifications_economy").innerHTML = html;
+        var parent = document.getElementsByClassName("diversifications_economy")[0];
+        parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+      
       function document_loaded(){
-        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortgolios()
+        get_symbol_types();
+        get_countries();
+        get_economy_sectors();
+        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortfolios()
       }
       
       document.addEventListener("DOMContentLoaded",  document_loaded);
@@ -173,6 +280,23 @@
     </div>
     <div class="symbol">
 
+    </div>
+    <div class="diversifications">
+      <div class="diversification_type diversification_obj">
+        <div class="diversification_label">Отнести к типу:</div>
+        <select name="diversification_type" id="diversification_type"></select>
+        <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      </div>
+      <div class="diversification_country diversification_obj">
+        <div class="diversification_label">Отнести к стране:</div>
+        <select name="diversification_country" id="diversification_country"></select>
+        <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      </div>
+      <div class="diversifications_economy diversification_obj">
+        <div class="diversification_label">Отнести к экономическоу сектору:</div>
+        <select name="diversifications_economy" id="diversifications_economy"></select>
+        <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      </div>
     </div>
     <button class="button" onclick="buy()">Купить</button>
   </body>

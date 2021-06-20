@@ -11,9 +11,14 @@ function buySymbols(){
 }
 
 function applySymbols(data){
+    addDeal(data);
+    addSymbol(data);
+}
+
+function addDeal(data){
     const dealsTS = new TableSheet("Сделки");
-    const portfolios = getExistingPortgolios();
-    const selected_portfolio = portfolios.filter((portgolio) => portgolio['id'] == data['portfolio_id'])[0];
+    const portfolios = getExistingPortfolios();
+    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == data['portfolio_id'])[0];
 
     var options = {
         "Дата": new Date(),
@@ -21,9 +26,13 @@ function applySymbols(data){
         "Тикер": data['symbol']['ticker'],
         "Тип сделки": "Покупка",
         "Цена покупки": data['price'],
-        "Валюта сделки": data['symbol']['currency'],
+        "Валюта сделки": data['symbol']['currency']['code'],
         "Количество": data['count'],
         "Сумма": data['price'] * data['count']
     };
     dealsTS.appendRow(options);
+}
+
+function addSymbol(data){
+    
 }

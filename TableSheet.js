@@ -27,6 +27,11 @@ TableSheet.prototype.createSheet = function(name){
     return sheet;
 }
 
+TableSheet.prototype.rename = function(new_name){
+    this.name = new_name;
+    this.sheet.setName(this.name);
+}
+
 TableSheet.prototype.getColumns = function(){
     var col_count = this.sheet.getLastColumn();
     var names = this.sheet.getSheetValues(1, 1, 1, col_count)[0];

@@ -42,7 +42,12 @@ function newPortfolioLast(data, economy_sectors){
 }
 
 function createNewPortfolio(data){
-    var portfolioTS = new TableSheet("Портфели", 3);
+    var row_index = addPortfolioRow(data);
+    addPortfolioSheet(data, row_index);
+}
+
+function addPortfolioRow(data){
+    var portfoliosListTS = new TableSheet("Портфели", 3);
     var options = {
         "Дата создания": new Date(),
         "Название": data['name'],
@@ -57,17 +62,63 @@ function createNewPortfolio(data){
         "Брокер": data['broker'],
     };
 
-    if (portfolioTS.getLastRow() == 2)
+    if (portfoliosListTS.getLastRow() == 2)
         options['ID'] = 1
     else 
-        options['ID'] = "=MAX(A3:A"+String(portfolioTS.getLastRow())+")+1"
+        options['ID'] = "=MAX(A3:A"+String(portfoliosListTS.getLastRow())+")+1"
     
-    portfolioTS.appendRow(options);
+    return portfoliosListTS.appendRow(options);
+}
+
+function addPortfolioSheet(data, row_index){
+    var portfolioTS = new TableSheet("P.Консервативный");
+    portfolioTS.rename(data['name']);
+    updateFormulas(portfolioTS, row_index);
+}
+
+function updateFormulas(portfolioTS, row_index){
+    updateTypeFormulas(portfolioTS, row_index);
+    updateCountryFormulas(portfolioTS, row_index);
+    updateObjFormulas(portfolioTS, row_index);
+}
+
+function updateTypeFormulas(portfolioTS, row_index){
+    var index = 6;
+    var value_char = "H";
+    var range = portfolioTS.sheet.getRange("G6:G10");
+    updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
+}
+
+function updateCountryFormulas(portfolioTS, row_index){
+    var index = 6;
+    var value_char = "L";
+    var range = portfolioTS.sheet.getRange("K6:K9");
+    updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
+}
+
+function updateEconomyFormulas(portfolioTS, row_index){
+    var index = 6;
+    var value_char = "J";
+    var range = portfolioTS.sheet.getRange("I6:I9");
+    updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
+}
+
+function updateObjFormulas(portfolioTS, values, value_char, index, row_index){
+    var portfoliosListTS = new TableSheet("Портфели", 3);
+    for (var i in values){
+        var name = values[i][0];
+
+        var range = portfoliosListTS.sheet.getRange(row_index, portfoliosListTS.columns[name] + 1);
+        var range_str = range.getA1Notation();
+
+        var pRange = portfolioTS.sheet.getRange(value_char + (index + parseInt(i)));
+        pRange.setValue("=Портфели!"+range_str+"/100");
+    }
 }
 
 function updateObjectsDiversification(data, object){
-    var portfolioTS = new TableSheet("Портфели", 3);
-    var columns = Object.keys(portfolioTS.columns);
+    var portfoliosListTS = new TableSheet("Портфели", 3);
+    var columns = Object.keys(portfoliosListTS.columns);
     var options = {};
     for (var i in object){
         var st = object[i];
@@ -76,5 +127,5 @@ function updateObjectsDiversification(data, object){
         }
     }
 
-    portfolioTS.updateRow(options, portfolioTS.getLastRow());
+    portfoliosListTS.updateRow(options, portfoliosListTS.getLastRow());
 }
