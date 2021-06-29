@@ -249,8 +249,8 @@
           html += "<option value='" + economy_sector['id'] + "'>" + economy_sector['name'] +"</option>";
         }
 
-        document.getElementById("diversifications_economy").innerHTML = html;
-        var parent = document.getElementsByClassName("diversifications_economy")[0];
+        document.getElementById("diversification_economy").innerHTML = html;
+        var parent = document.getElementsByClassName("diversification_economy")[0];
         parent.removeChild(parent.getElementsByTagName("img")[0]);
       }
       
@@ -292,9 +292,9 @@
         <select name="diversification_country" id="diversification_country"></select>
         <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
       </div>
-      <div class="diversifications_economy diversification_obj">
+      <div class="diversification_economy diversification_obj">
         <div class="diversification_label">Отнести к экономическоу сектору:</div>
-        <select name="diversifications_economy" id="diversifications_economy"></select>
+        <select name="diversification_economy" id="diversification_economy"></select>
         <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
       </div>
     </div>

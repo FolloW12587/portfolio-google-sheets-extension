@@ -68,3 +68,17 @@ function getExistingPortfolios(){
 function errorHandler(error_type, message){
     alert(error_type + ": " + message);
 }
+
+function Test(){
+    var portfolioTS = new PortfolioSheet("P.Консервативный_шаблон (копия)");
+    
+    var new_data = {
+        "Тикер": "SBER",
+        "Дата открытия": new Date(),
+        "Наименование": "Сбербанк",
+        "Кол-во акций": 2,
+        "Цена входа": 10000,
+        "Цена рыночная": 10100,
+    };
+    portfolioTS.appendRow(new_data);
+}

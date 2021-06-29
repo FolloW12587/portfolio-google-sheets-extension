@@ -11,18 +11,19 @@ function buySymbols(){
 }
 
 function applySymbols(data){
-    addDeal(data);
-    addSymbol(data);
-}
-
-function addDeal(data){
-    const dealsTS = new TableSheet("Сделки");
     const portfolios = getExistingPortfolios();
     const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == data['portfolio_id'])[0];
+   
+    addDeal(data, selected_portfolio);
+    addSymbol(data, selected_portfolio);
+}
+
+function addDeal(data, portfolio){
+    const dealsTS = new TableSheet("Сделки");
 
     var options = {
         "Дата": new Date(),
-        "Портфель": selected_portfolio['name'],
+        "Портфель": portfolio['name'],
         "Тикер": data['symbol']['ticker'],
         "Тип сделки": "Покупка",
         "Цена покупки": data['price'],
@@ -33,6 +34,20 @@ function addDeal(data){
     dealsTS.appendRow(options);
 }
 
-function addSymbol(data){
-    
+function addSymbol(data, portfolio){
+    const portfolioTS = new PortfolioSheet(portfolio['name']);
+
+    var options = {
+        "Тикер": data['symbol']['ticker'],
+        "ID Символа": data['symbol']['symbolId'],
+        "Дата открытия": new Date(),
+        "Наименование": data['symbol']['name'],
+        "Кол-во акций": data['count'],
+        "Цена входа": data['price'],
+        "Цена рыночная": "=YARDOFFSYMBOL(R[0]C"+(portfolioTS.columns["ID Символа"]+1)+")",
+        "Тип": data['type'],
+        "Страна": data['country'],
+        "Сектор": data['economy_sector']
+    };
+    portfolioTS.appendRow(options);
 }
