@@ -3,31 +3,21 @@ function onOpen(){
     ui.createAddonMenu()
         .addItem("Настроить документ", "startWorking")
         .addItem("Добавить портфель", "newPortfolio")
-        .addItem("Купить актив", "buySymbols")
+        .addSeparator()
+        .addItem("Пополнить портфель", "TopUp")
+        .addSubMenu(ui.createMenu("Активы")
+            .addItem("Купить", "buySymbols")
+            .addItem("Продать", "sellSymbols")
+        )
+        .addSubMenu(ui.createMenu("Валюты")
+            .addItem("Купить", "buyCurrency")
+            .addItem("Продать", "sellCurrency")
+        )
         .addToUi()
 }
 
 NECESSARY_TABLES = ["Портфели", "Тикеры", "Сделки"];
 
-
-/**
- * Get the price of symbol by its id.
- *
- * @param {symbol_id} input The symbol id that you want to get the price of.
- * @return The price of symbol.
- * @customfunction
- */
-function YARDOFFSYMBOL(symbol_id){
-    var backendAPI = new BackendAPI();
-
-    var symbols = backendAPI.getSymbolBySymbolId(symbol_id);
-    if (symbols.length < 1){
-        alert("Указанного актива \""+symbol_id+"\" не существует!");
-        return 0;
-    }
-    var symbol = symbols[0];
-    return parseFloat(symbol["price"]);
-}
 
 function startWorking(){
     for (var i in NECESSARY_TABLES){
@@ -47,26 +37,8 @@ function checkExcistingTables(){
     return true;
 }
 
-function getExistingPortfolios(){
-    var portfoliosListTS = new TableSheet("Портфели", 3);
-
-    var data = portfoliosListTS.getData();
-    var output = [];
-    for (var i in data){
-        var temp = {
-            "id": data[i][portfoliosListTS.columns["ID"]],
-            "name": data[i][portfoliosListTS.columns["Название"]],
-        }
-        if (temp['id'] == ''){
-            continue;
-        }
-        output.push(temp);
-    }
-    return output;
-}
-
 function errorHandler(error_type, message){
-    alert(error_type + ": " + message);
+    SpreadsheetApp.getUi().alert(error_type + ": " + message);
 }
 
 function Test(){

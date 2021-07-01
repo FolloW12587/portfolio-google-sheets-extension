@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+    <style>
+      .portfolio{
+        display: flex;
+        margin: 10px;
+      }
+      .amount_container{
+        display: flex;
+        margin: 10px;
+      }
+      .loading{
+        margin-left: 10px;
+        width: 25px;
+        height: 25px;
+      }
+    </style>
+
+    <script>
+      function topUp(){
+        var amount_node = document.getElementById("amount");
+        if (amount_node.value == "" || isNaN(parseFloat(amount_node.value))){
+          alert("Введите сумму пополнения!");
+          return;
+        }
+        var p_node = document.getElementById("portfolio");
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+
+        var data = {
+          "portfolio_id": p_node.value,
+          "amount": parseFloat(amount_node.value),
+          "currency": portfolio['currency']
+        };
+        google.script.run.applyTopUp(data);
+        google.script.host.close();
+      }
+
+      function applyPortfolios(portfolios){
+        window.portfolios = portfolios;
+        var html = "<option value='' selected disabled>------------</option>";
+        for (var i in portfolios){
+          var portfolio = portfolios[i];
+          
+          html += "<option value='"+portfolio['id']+"'>["+portfolio['id']+"] "+portfolio['name']+"</option>";
+        }
+
+        var p_node = document.getElementById("portfolio");
+        p_node.innerHTML = html;
+        p_node.addEventListener("change", (e)=>{
+
+        });
+        var parent = document.getElementsByClassName("portfolio")[0];
+        parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+
+      function portfolio_changed(){
+        var p_node = document.getElementById("portfolio");
+        var portfolio_id = pnode.value;
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+        var amount_node = document.getElementById("amount");
+        amount.value = portfolio["amount"];
+        var amount_currency_node = document.getElementById("amount_currency");
+        amount_currency_node.innerHTML = "[" + portfolio['currency'] + "]";
+      }
+      
+      function document_loaded(){
+        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortfolios()
+      }
+      
+      document.addEventListener("DOMContentLoaded",  document_loaded);
+    </script>
+  </head>
+  <body>
+    <div class="portfolio">
+      <div class="portfolio_label">Выберете портфель:</div>
+      <select name="protfolio" id="portfolio"></select>
+      <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
+    <div class="amount_container">
+      <div class="amount_label">Введите сумму пополнения:</div>
+      <input type="text" class="amount" id="amount">
+      <div class="amount_currency" id="amount_currency">[]</div>
+    </div>
+    
+    <button class="button" onclick="topUp()">Пополнить</button>
+  </body>
+</html>

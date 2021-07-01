@@ -28,6 +28,7 @@
           term: document.getElementById("term").value,
           age: document.getElementById("age").value,
           profit: document.getElementById("profit").value,
+          period_topup: document.getElementById("period_topup").value,
           start_capital: document.getElementById("start_capital").value,
           broker: document.getElementById("broker").value,
           period: document.getElementById("period").value,
@@ -50,8 +51,8 @@
     <div class="parametr">
       <div class="parametr_name">Валюта: </div>
       <select name="currency" id="currency">
-        <option value="RUB">Рубль</option>
-        <option value="USD"selected>Доллар</option>
+        <option value="RUB"selected>Рубль</option>
+        <option value="USD">Доллар</option>
         <option value="EUR">Евро</option>
       </select>
     </div>
@@ -77,6 +78,10 @@
     <div class="parametr">
       <div class="parametr_name">Начальный капитал: </div>
       <input type="text" name="start_capital" id="start_capital" class="parametr_value">
+    </div>
+    <div class="parametr">
+      <div class="parametr_name">Периодический платеж: </div>
+      <input type="text" name="period_topup" id="period_topup" class="parametr_value">
     </div>
     <div class="parametr">
       <div class="parametr_name">Брокер: </div>

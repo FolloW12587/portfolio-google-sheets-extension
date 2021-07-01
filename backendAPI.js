@@ -31,6 +31,19 @@ class BackendAPI{
         return JSON.parse(response.getContextText());
     }
 
+    getCurrencyRateByCode(code){
+        var endpoint = "currency";
+        var data = "code=" + encodeURIComponent(code);
+
+        var response = this.makeRequest(endpoint, data);
+        if (response.getResponseCode() !== 200){
+            errorHandler("Can't connect to server", response.getContextText());
+            return;
+        }
+
+        return JSON.parse(response.getContextText());
+    }
+
     makeRequest(endpoint, data=null, method="GET"){
         var options = {
             "method": method,

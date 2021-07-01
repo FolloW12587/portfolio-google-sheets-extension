@@ -56,6 +56,7 @@ function addPortfolioRow(data){
         "Срок цели": data['term'],
         "Ожидаемая доходность": data['profit'],
         "Возраст распаковщика": data['age'],
+        "Периодический платеж": data['period_topup'],
         "Первый платеж": data['start_capital'],
         "Валюта портфеля": data['currency'],
         "Периодичность внесения": data['period'],
@@ -71,50 +72,53 @@ function addPortfolioRow(data){
 }
 
 function addPortfolioSheet(data, row_index){
-    var portfolioTS = new TableSheet("P.Консервативный");
+    var portfolioTS = new TableSheet("Портфель_шаблон");
     portfolioTS.rename(data['name']);
-    updateFormulas(portfolioTS, row_index);
+
+    var refillTS = new TableSheet("График.Платежей_шаблон");
+    refillTS.rename("График.Платежей_шаблон."+data['name']);
+    // updateFormulas(portfolioTS, row_index);
 }
 
-function updateFormulas(portfolioTS, row_index){
-    updateTypeFormulas(portfolioTS, row_index);
-    updateCountryFormulas(portfolioTS, row_index);
-    updateObjFormulas(portfolioTS, row_index);
-}
+// function updateFormulas(portfolioTS, row_index){
+//     updateTypeFormulas(portfolioTS, row_index);
+//     updateCountryFormulas(portfolioTS, row_index);
+//     updateObjFormulas(portfolioTS, row_index);
+// }
 
-function updateTypeFormulas(portfolioTS, row_index){
-    var index = 6;
-    var value_char = "H";
-    var range = portfolioTS.sheet.getRange("G6:G10");
-    updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
-}
+// function updateTypeFormulas(portfolioTS, row_index){
+//     var index = 6;
+//     var value_char = "H";
+//     var range = portfolioTS.sheet.getRange("G6:G10");
+//     updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
+// }
 
-function updateCountryFormulas(portfolioTS, row_index){
-    var index = 6;
-    var value_char = "L";
-    var range = portfolioTS.sheet.getRange("K6:K9");
-    updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
-}
+// function updateCountryFormulas(portfolioTS, row_index){
+//     var index = 6;
+//     var value_char = "L";
+//     var range = portfolioTS.sheet.getRange("K6:K9");
+//     updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
+// }
 
-function updateEconomyFormulas(portfolioTS, row_index){
-    var index = 6;
-    var value_char = "J";
-    var range = portfolioTS.sheet.getRange("I6:I9");
-    updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
-}
+// function updateEconomyFormulas(portfolioTS, row_index){
+//     var index = 6;
+//     var value_char = "J";
+//     var range = portfolioTS.sheet.getRange("I6:I9");
+//     updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
+// }
 
-function updateObjFormulas(portfolioTS, values, value_char, index, row_index){
-    var portfoliosListTS = new TableSheet("Портфели", 3);
-    for (var i in values){
-        var name = values[i][0];
+// function updateObjFormulas(portfolioTS, values, value_char, index, row_index){
+//     var portfoliosListTS = new TableSheet("Портфели", 3);
+//     for (var i in values){
+//         var name = values[i][0];
 
-        var range = portfoliosListTS.sheet.getRange(row_index, portfoliosListTS.columns[name] + 1);
-        var range_str = range.getA1Notation();
+//         var range = portfoliosListTS.sheet.getRange(row_index, portfoliosListTS.columns[name] + 1);
+//         var range_str = range.getA1Notation();
 
-        var pRange = portfolioTS.sheet.getRange(value_char + (index + parseInt(i)));
-        pRange.setValue("=Портфели!"+range_str+"/100");
-    }
-}
+//         var pRange = portfolioTS.sheet.getRange(value_char + (index + parseInt(i)));
+//         pRange.setValue("=Портфели!"+range_str+"/100");
+//     }
+// }
 
 function updateObjectsDiversification(data, object){
     var portfoliosListTS = new TableSheet("Портфели", 3);
@@ -129,3 +133,45 @@ function updateObjectsDiversification(data, object){
 
     portfoliosListTS.updateRow(options, portfoliosListTS.getLastRow());
 }
+
+function getExistingPortfolios(){
+    var portfoliosListTS = new TableSheet("Портфели", 3);
+
+    var data = portfoliosListTS.getData();
+    var output = [];
+    for (var i in data){
+        var temp = {
+            "id": data[i][portfoliosListTS.columns["ID"]],
+            "name": data[i][portfoliosListTS.columns["Название"]],
+            "currency": data[i][portfoliosListTS.columns["Валюта портфеля"]],
+            "amount": data[i][portfoliosListTS.columns["Периодический платеж"]],
+        }
+        if (temp['id'] == ''){
+            continue;
+        }
+        output.push(temp);
+    }
+    return output;
+}
+
+function TopUp(){
+    if (!checkExcistingTables()){
+        return;
+    }
+
+    var html = HtmlService.createHtmlOutputFromFile('topUp')
+        .setWidth(400)
+        .setHeight(400);
+    SpreadsheetApp.getUi()
+        .showModalDialog(html, 'Пополнение портфеля');
+
+}
+
+function applyTopUp(data){
+    const portfolios = getExistingPortfolios();
+    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == data['portfolio_id'])[0];
+
+    const portfolioTS = new PortfolioSheet(selected_portfolio['name']);
+    portfolioTS.topUp(data);
+}
+
