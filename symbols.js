@@ -4,21 +4,34 @@ function buySymbols(){
     }
 
     var html = HtmlService.createHtmlOutputFromFile('buySymbol')
-        .setWidth(400)
-        .setHeight(400);
+        .setWidth(500)
+        .setHeight(550);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Купить актив');
+}
+
+function sellSymbols(){
+
 }
 
 function applySymbols(data, type){
     const portfolios = getExistingPortfolios();
     const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == data['portfolio_id'])[0];
-   
-    addDeal(data, selected_portfolio, "Покупка");
-    if (type == "Покупка")
-        addSymbol(data, selected_portfolio);
-    else 
-        subSymbol(data, selected_portfolio);
+    var portfolioTS = PortfolioSheet(selected_portfolio['name']);
+
+    var option = {
+        "currency": data['symbol']['currency']['code'],
+        "amount": data['count'] * data['price']
+    };
+    addDeal(data, selected_portfolio, type);
+    if (type == "Покупка"){
+        portfolioTS.debit(option);
+        addSymbol(data, portfolioTS);
+    }
+    else {
+        portfolioTS.topUp(option);
+        subSymbol(data, portfolioTS);
+    }
 }
 
 function addDeal(data, portfolio, type){
@@ -37,9 +50,7 @@ function addDeal(data, portfolio, type){
     dealsTS.appendRow(options);
 }
 
-function addSymbol(data, portfolio){
-    const portfolioTS = new PortfolioSheet(portfolio['name']);
-
+function addSymbol(data, portfolioTS){
     var options = {
         "Тикер": data['symbol']['ticker'],
         "ID Символа": data['symbol']['symbolId'],
@@ -55,6 +66,6 @@ function addSymbol(data, portfolio){
     portfolioTS.appendRow(options);
 }
 
-function subSymbol(data, portfolio){
+function subSymbol(data, portfolioTS){
 
 }

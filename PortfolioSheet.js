@@ -134,3 +134,19 @@ PortfolioSheet.prototype.topUp = function(data){
         return;
     }
 }
+
+PortfolioSheet.prototype.debit = function(data){
+    var amountData = this.getAmountData();
+
+    for (var i in amountData){
+        if (amountData[i][this.columns["Тикер"]] != data["currency"])
+            continue;
+        
+        var options = {
+            "Кол-во акций": amountData[i][this.columns["Кол-во акций"]] - data['amount']
+        };
+
+        this.updateRow(options, this.getAmountStarts() + parseInt(i));
+        return;
+    }
+}

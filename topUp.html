@@ -26,7 +26,7 @@
           return;
         }
         var p_node = document.getElementById("portfolio");
-        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+        var portfolio = window.portfolios.filter((p) => p['id'] == p_node.value)[0];
 
         var data = {
           "portfolio_id": p_node.value,
@@ -49,7 +49,7 @@
         var p_node = document.getElementById("portfolio");
         p_node.innerHTML = html;
         p_node.addEventListener("change", (e)=>{
-
+          portfolio_changed();
         });
         var parent = document.getElementsByClassName("portfolio")[0];
         parent.removeChild(parent.getElementsByTagName("img")[0]);
@@ -57,7 +57,7 @@
 
       function portfolio_changed(){
         var p_node = document.getElementById("portfolio");
-        var portfolio_id = pnode.value;
+        var portfolio_id = p_node.value;
         var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
         var amount_node = document.getElementById("amount");
         amount.value = portfolio["amount"];

@@ -30,6 +30,21 @@
       .portfolio{
         display: flex;
       }
+      .portfolio_picker{
+        display: flex;
+        width: 70%;
+        height: 20px;
+      }
+      .portfolio_info{
+        width: 30%;
+      }
+      .portfolio_currency_container{
+        display: flex;
+        margin-bottom: 5px;
+      }
+      .portfolio_currency_amount{
+        margin-left: 5px;
+      }
       .diversifications{
         margin: 10px;
         display: none;
@@ -53,6 +68,24 @@
         const price = parseFloat(document.getElementById("price").value);
         const count = parseInt(document.getElementById("count").value);
         const portfolio_id = parseInt(document.getElementById("portfolio").value);
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+
+        var amount = portfolio['amount'].filter((c) => symbol['currency']['code'] == c['code']);
+        if (amount.length == 0){
+          alert("Активы в данной валюте пока не доступены! Мы работаем над усовершенствованием нашего приложения!");
+          return;
+        }
+        amount = amount[0];
+        if (price * count > amount['sum']){
+          if (price > amount['sum']){
+            alert("На балансе портфеля не хватает средств для покупки актива! Пополните счет, если это основная валюта портфеля, в противном случае произведите покупку валюты в меню расширения.");
+            return;
+          } else {
+            alert("На балансе портфеля не хватает средств для покупки данного количества активов! Пополните счет, если это основная валюта портфеля, в противном случае произведите покупку валюты в меню расширения.")
+            return;
+          }
+        }
+
         const type_id = parseInt(document.getElementById("diversification_type").value);
         const country_id = parseInt(document.getElementById("diversification_country").value);
         const economy_sector_id = parseInt(document.getElementById("diversification_economy").value);
@@ -160,16 +193,62 @@
       }
 
       function applyPortfolios(portfolios){
-        var html = "";
+        window.portfolios = portfolios;
+        var html = "<option value='' selected disabled>------------</option>";
         for (var i in portfolios){
           var portfolio = portfolios[i];
           
           html += "<option value='"+portfolio['id']+"'>["+portfolio['id']+"] "+portfolio['name']+"</option>";
         }
 
-        document.getElementById("portfolio").innerHTML = html;
-        var parent = document.getElementsByClassName("portfolio")[0];
+        var p_node = document.getElementById("portfolio");
+        p_node.innerHTML = html;
+        p_node.addEventListener("change", (e)=>{
+          portfolio_changed();
+        });
+        var parent = document.getElementsByClassName("portfolio_picker")[0];
         parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+
+      function portfolio_changed(){
+        var p_node = document.getElementById("portfolio");
+        var portfolio_id = p_node.value;
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+
+        if (portfolio['amount'] === undefined){
+          var els = document.getElementsByClassName("portfolio_currency_amount");
+          for (var i in els){
+            els[i].innerHTML = '<img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">';
+          }
+          google.script.run.withSuccessHandler(acceptPortfolioAmount).getPortfolioAmount(portfolio_id);
+          return;
+        }
+        
+        var els = document.getElementsByClassName("portfolio_currency_amount");
+        for (var i=0; i < els.length; i++){
+          var el = els[i];
+          var currency = portfolio['amount'].filter((c) => el.getAttribute("data-src") == c['code']);
+
+          if (currency.length == 0)
+            continue;
+          
+          currency = currency[0];
+          el.innerHTML = currency['sum'];
+        }
+      }
+
+      function acceptPortfolioAmount(data){
+        for (var i in window.portfolios){
+          if (window.portfolios[i]['id'] == data['portfolio_id']){
+            window.portfolios[i]['amount'] = data['amount'];
+            break;
+          }
+        }
+
+        var p_node = document.getElementById("portfolio");
+        var portfolio_id = p_node.value;
+        if (portfolio_id == data['portfolio_id'])
+          portfolio_changed();
       }
 
       function get_symbol_types(){
@@ -266,9 +345,28 @@
   </head>
   <body>
     <div class="portfolio">
-      <div class="portfolio_label">Выберете портфель:</div>
-      <select name="protfolio" id="portfolio"></select>
-      <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      <div class="portfolio_picker">
+        <div class="portfolio_label">Выберете портфель:</div>
+        <select name="protfolio" id="portfolio"></select>
+        <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      </div>
+      <div class="portfolio_info">
+        <div class="portfolio_currency_container">
+          <div class="portfolio_currency_label">Рублей:</div>
+          <div class="portfolio_currency_amount" data-src="RUB">0</div>
+          <div class="portfolio_currency_symbol">₽</div>
+        </div>
+        <div class="portfolio_currency_container">
+          <div class="portfolio_currency_label">Долларов:</div>
+          <div class="portfolio_currency_amount" data-src="USD">0</div>
+          <div class="portfolio_currency_symbol">$</div>
+        </div>
+        <div class="portfolio_currency_container">
+          <div class="portfolio_currency_label">Евро:</div>
+          <div class="portfolio_currency_amount" data-src="EUR">0</div>
+          <div class="portfolio_currency_symbol">€</div>
+        </div>
+      </div>
     </div>
     <div class="ticker_container">
       <div class="ticker_title">Введите тикер:</div>

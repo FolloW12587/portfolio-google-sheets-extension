@@ -4,7 +4,7 @@ function onOpen(){
         .addItem("Настроить документ", "startWorking")
         .addItem("Добавить портфель", "newPortfolio")
         .addSeparator()
-        .addItem("Пополнить портфель", "TopUp")
+        .addItem("Пополнить портфель", "topUp")
         .addSubMenu(ui.createMenu("Активы")
             .addItem("Купить", "buySymbols")
             .addItem("Продать", "sellSymbols")

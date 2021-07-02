@@ -30,6 +30,9 @@
         errorHandler("Ошибка ввода", "Неверно указан входной параметр фукции конвертации валют! Необходимо ввести два кода валют, разделенных /");
         return 0;
     }
+    if (codes[0] == "USD") // TODO: change when deploy
+        return 77;
+    else return 90;
     
     var rates = [];
     for (var i in codesArray){

@@ -72,8 +72,14 @@ function addPortfolioRow(data){
 }
 
 function addPortfolioSheet(data, row_index){
-    var portfolioTS = new TableSheet("Портфель_шаблон");
+    var portfolioTS = new PortfolioSheet("Портфель_шаблон");
     portfolioTS.rename(data['name']);
+
+    var options = {
+        "currency": data['currency'],
+        "amount": data['start_capital']
+    };
+    portfolioTS.topUp(options);
 
     var refillTS = new TableSheet("График.Платежей_шаблон");
     refillTS.rename("График.Платежей_шаблон."+data['name']);
@@ -144,7 +150,7 @@ function getExistingPortfolios(){
             "id": data[i][portfoliosListTS.columns["ID"]],
             "name": data[i][portfoliosListTS.columns["Название"]],
             "currency": data[i][portfoliosListTS.columns["Валюта портфеля"]],
-            "amount": data[i][portfoliosListTS.columns["Периодический платеж"]],
+            "periodical_topup": data[i][portfoliosListTS.columns["Периодический платеж"]],
         }
         if (temp['id'] == ''){
             continue;
@@ -154,7 +160,7 @@ function getExistingPortfolios(){
     return output;
 }
 
-function TopUp(){
+function topUp(){
     if (!checkExcistingTables()){
         return;
     }
@@ -175,3 +181,13 @@ function applyTopUp(data){
     portfolioTS.topUp(data);
 }
 
+function getPortfolioAmount(portfolio_id){
+    const portfolios = getExistingPortfolios();
+    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == portfolio_id)[0];
+
+    const portfolioTS = new PortfolioSheet(selected_portfolio['name']);
+    return {
+        "portfolio_id": portfolio_id,
+        "amount": portfolioTS.getPortfolioAmount()
+    };
+}

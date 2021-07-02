@@ -1,0 +1,7 @@
+function buyCurrency(){
+
+}
+
+function sellCurrency(){
+    
+}
