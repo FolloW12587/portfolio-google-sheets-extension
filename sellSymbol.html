@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+    <style>
+      .ticker_container{
+        display: flex;
+      }
+      .ticker_input{
+        margin: 0 10px;
+      }
+      .loading{
+        margin-left: 10px;
+        width: 25px;
+        height: 25px;
+      }
+      .symbol_info{
+        margin: 10px;
+      }
+      .parameter{
+        display: flex;
+        margin: 10px;
+      }
+      .parameter_value{
+        margin-left: 5px;
+      }
+      .symbols_select_container{
+        margin: 5px;
+      }
+      .portfolio{
+        display: flex;
+      }
+      .portfolio_picker{
+        display: flex;
+        width: 70%;
+        height: 20px;
+      }
+      .portfolio_info{
+        width: 30%;
+      }
+      .portfolio_currency_container{
+        display: flex;
+        margin-bottom: 5px;
+      }
+      .portfolio_currency_amount{
+        margin-left: 5px;
+      }
+      .diversifications{
+        margin: 10px;
+        display: none;
+      }
+      .diversification_obj{
+        margin-bottom: 5px;
+        display: flex;
+      }
+    </style>
+
+    <script>
+      function sell(){
+        var portfolio_id = document.getElementById("portfolio").value;
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+        
+        var symbol_id = document.getElementById("symbol").value;
+        var symbol = portfolio['symbols'].filter((s) => s['symbolId'] == symbol_id)[0];
+
+        var count = parseInt(document.getElementById("count").value);
+        var price = parseFloat(document.getElementById("price").value);
+
+        if (isNaN(price) || price == null || price == "" || price <= 0){
+          alert("Цена не может быть меньше или равняться нулю");
+          return;
+        }
+
+        if (isNaN(count) || count == null || count == "" || count < 1 || count > symbol['count']){
+          alert("Количество не может быть меньше или равняться нулю или быть больше имеющихся");
+          return;
+        }
+
+        symbol['currency'] = {
+          "code": symbol['currency']
+        };
+        var data = {
+          "symbol": symbol,
+          "portfolio_id": portfolio_id,
+          "count": count,
+          "price": price
+        };
+
+        google.script.run.applySymbols(data, "Продажа");
+        google.script.host.close();
+      }
+
+      function applyPortfolios(portfolios){
+        window.portfolios = portfolios;
+        var html = "<option value='' selected disabled>------------</option>";
+        for (var i in portfolios){
+          var portfolio = portfolios[i];
+          
+          html += "<option value='"+portfolio['id']+"'>["+portfolio['id']+"] "+portfolio['name']+"</option>";
+        }
+
+        var p_node = document.getElementById("portfolio");
+        p_node.innerHTML = html;
+        p_node.addEventListener("change", (e)=>{
+          portfolio_changed();
+        });
+        var parent = document.getElementsByClassName("portfolio_picker")[0];
+        parent.removeChild(parent.getElementsByTagName("img")[0]);
+      }
+
+      function portfolio_changed(){
+        document.getElementsByClassName("symbol")[0].innerHTML = "";
+
+        var p_node = document.getElementById("portfolio");
+        var portfolio_id = p_node.value;
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+
+        if (portfolio['symbols'] === undefined){
+          var el = document.getElementsByClassName("symbols_select_container")[0];
+          el.innerHTML = '<img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">';
+          google.script.run.withSuccessHandler(acceptPortfolioSymbols).getPortfolioSymbols(portfolio_id);
+          return;
+        }
+        
+        var html = '<div class="symbols_select">Выберете актив для продажи:</div><select name="symbols" id="symbols"><option value="" selected disabled>------------</option>';
+
+        for (var i in portfolio['symbols']){
+          var symbol = portfolio['symbols'][i];
+          html += `<option value="${symbol['symbolId']}">[${symbol['symbolId']}] ${symbol['name']} </option>`;
+        }
+        html += '</select>';
+
+        var el = document.getElementsByClassName("symbols_select_container")[0].innerHTML = html;
+        document.getElementById("symbol").addEventListener("change", (e) => {
+          document.getElementsByClassName("symbol")[0].innerHTML = "";
+          symbol_changed();
+        });
+      }
+
+      function symbol_changed(){
+        var portfolio_id = document.getElementById("portfolio").value;
+        var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
+        
+        var symbol_id = document.getElementById("symbol").value;
+        var symbol = portfolio['symbols'].filter((s) => s['symbolId'] == symbol_id)[0];
+
+        var html = `<div class="parameter"><div class="parameter_label">Тикер:</div><div class="parameter_value">${symbol['ticker']}</div></div>`;
+        html += `<div class="parameter"><div class="parameter_label">ID Символа:</div><div class="parameter_value">${symbol['symbolId']}</div></div>`;
+        html += `<div class="parameter"><div class="parameter_label">Наименование:</div><div class="parameter_value">${symbol['name']}</div></div>`;
+        html += `<div class="parameter"><div class="parameter_label">Количество имеется:</div><div class="parameter_value">${symbol['count']}</div></div>`;
+        html += `<div class="parameter"><div class="parameter_label">Количество продать:</div><input type="text" class="parameter_value" id="count" value="1"></div>`;
+        html += `<div class="parameter"><div class="parameter_label">Цена:</div><input type="text" class="parameter_value" id="price" value="${symbol['price']}"></div>`;
+
+        document.getElementsByClassName("symbol")[0].innerHTML = html;
+      }
+
+      function acceptPortfolioSymbols(data){
+        for (var i in window.portfolios){
+          if (window.portfolios[i]['id'] == data['portfolio_id']){
+            window.portfolios[i]['symbols'] = data['symbols'];
+            break;
+          }
+        }
+
+        var p_node = document.getElementById("portfolio");
+        var portfolio_id = p_node.value;
+        if (portfolio_id == data['portfolio_id'])
+          portfolio_changed();
+      }
+      
+      function document_loaded(){
+        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortfolios()
+      }
+      
+      document.addEventListener("DOMContentLoaded",  document_loaded);
+    </script>
+  </head>
+  <body>
+    <div class="portfolio">
+      <div class="portfolio_picker">
+        <div class="portfolio_label">Выберете портфель:</div>
+        <select name="protfolio" id="portfolio"></select>
+        <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      </div>
+    </div>
+    <div class="symbols_select_container">
+      <div class="symbols_select">Выберете актив для продажи:</div>
+      <select name="symbols" id="symbols">
+        <option value="" selected disabled>------------</option>
+      </select>
+    </div>
+    <div class="symbol">
+
+    </div>
+    <button class="button" onclick="sell()">Продать</button>
+  </body>
+</html>

@@ -60,7 +60,7 @@
         var portfolio_id = p_node.value;
         var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
         var amount_node = document.getElementById("amount");
-        amount.value = portfolio["amount"];
+        amount.value = portfolio["periodical_topup"];
         var amount_currency_node = document.getElementById("amount_currency");
         amount_currency_node.innerHTML = "[" + portfolio['currency'] + "]";
       }

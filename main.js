@@ -42,15 +42,20 @@ function errorHandler(error_type, message){
 }
 
 function Test(){
-    var portfolioTS = new PortfolioSheet("P.Консервативный_шаблон (копия)");
-    
-    var new_data = {
-        "Тикер": "SBER",
-        "Дата открытия": new Date(),
-        "Наименование": "Сбербанк",
-        "Кол-во акций": 2,
-        "Цена входа": 10000,
-        "Цена рыночная": 10100,
-    };
-    portfolioTS.appendRow(new_data);
-}
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var plTS = new TableSheet("Портфели");
+    var rangeHeader = plTS.sheet.getRange("O1:W1");
+    var rangeValues = plTS.sheet.getRange("O3:W3");
+    var chart = sheet.getCharts()[1];
+    chart = chart.modify()
+        .setChartType(Charts.ChartType.PIE)
+        .addRange(rangeValues)
+        .addRange(rangeHeader)
+        .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_ROWS)
+        // .setNumHeaders(rangeValues.getValues()[0].length)
+        .setTransposeRowsAndColumns(true)
+        .setOption("title", "План по классам типов")
+        .setOption("is3D", true)
+        .build()
+    sheet.updateChart(chart);
+  }

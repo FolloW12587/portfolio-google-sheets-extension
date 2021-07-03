@@ -11,19 +11,25 @@ function buySymbols(){
 }
 
 function sellSymbols(){
+    if (!checkExcistingTables()){
+        return;
+    }
 
+    var html = HtmlService.createHtmlOutputFromFile('sellSymbol')
+        .setWidth(400)
+        .setHeight(400);
+    SpreadsheetApp.getUi()
+        .showModalDialog(html, 'Продать актив');
 }
 
 function applySymbols(data, type){
-    const portfolios = getExistingPortfolios();
-    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == data['portfolio_id'])[0];
-    var portfolioTS = PortfolioSheet(selected_portfolio['name']);
+    var portfolioTS = getPortfolioTS(data['portfolio_id']);
 
     var option = {
         "currency": data['symbol']['currency']['code'],
         "amount": data['count'] * data['price']
     };
-    addDeal(data, selected_portfolio, type);
+    addDeal(data, portfolioTS.name, type);
     if (type == "Покупка"){
         portfolioTS.debit(option);
         addSymbol(data, portfolioTS);
@@ -39,7 +45,7 @@ function addDeal(data, portfolio, type){
 
     var options = {
         "Дата": new Date(),
-        "Портфель": portfolio['name'],
+        "Портфель": portfolio,
         "Тикер": data['symbol']['ticker'],
         "Тип сделки": type,
         "Цена покупки": data['price'],
@@ -56,16 +62,25 @@ function addSymbol(data, portfolioTS){
         "ID Символа": data['symbol']['symbolId'],
         "Дата открытия": new Date(),
         "Наименование": data['symbol']['name'],
+        "Валюта": data['currency']['code'],
         "Кол-во акций": data['count'],
         "Цена входа": data['price'],
         "Цена рыночная": "=YARDOFFSYMBOL(R[0]C"+(portfolioTS.columns["ID Символа"]+1)+")",
         "Тип": data['type'],
         "Страна": data['country'],
-        "Сектор": data['economy_sector']
+        "Сектор": data['economy_sector'],
+        "Кол-во закрытых": 0,
+        "Цена Закрытия": 0,
     };
-    portfolioTS.appendRow(options);
+    portfolioTS.addSymbol(options);
 }
 
 function subSymbol(data, portfolioTS){
-
+    var options = {
+        "ID Символа": data['symbol']['symbolId'],
+        "Дата закрытия": new Date(),
+        "Кол-во закрытых": data['count'],
+        "Цена Закрытия": data['price'],
+        "Валюта": data['currency']['code'],
+    };
 }

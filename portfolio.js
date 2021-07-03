@@ -133,7 +133,7 @@ function updateObjectsDiversification(data, object){
     for (var i in object){
         var st = object[i];
         if (columns.indexOf(st['name']) >-1){
-            options[st['name']] = data[st['id']];
+            options[st['name']] = parseFloat(data[st['id']]) / 100;
         }
     }
 
@@ -174,20 +174,45 @@ function topUp(){
 }
 
 function applyTopUp(data){
-    const portfolios = getExistingPortfolios();
-    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == data['portfolio_id'])[0];
-
-    const portfolioTS = new PortfolioSheet(selected_portfolio['name']);
+    const portfolioTS = getPortfolioTS(portfolio_id);
     portfolioTS.topUp(data);
 }
 
 function getPortfolioAmount(portfolio_id){
-    const portfolios = getExistingPortfolios();
-    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == portfolio_id)[0];
-
-    const portfolioTS = new PortfolioSheet(selected_portfolio['name']);
+    const portfolioTS = getPortfolioTS(portfolio_id);
     return {
         "portfolio_id": portfolio_id,
         "amount": portfolioTS.getPortfolioAmount()
     };
+}
+
+function getPortfolioSymbols(portfolio_id){
+    const portfolioTS = getPortfolioTS(portfolio_id);
+    var array = [];
+
+    const data = portfolioTS.getData();
+    for (var i in data){
+        const symbol = data[i];
+        const temp = {
+            "ticker": symbol[portfolioTS.columns['Тикер']],
+            "name": symbol[portfolioTS.columns['Наименование']],
+            "symbolId": symbol[portfolioTS.columns['ID Символа']],
+            "price": symbol[portfolioTS.columns['Цена рыночная']],
+            "count": symbol[portfolioTS.columns['Кол-во акций']],
+            "currency": symbol[portfolioTS.columns['Валюта']],
+        };
+        array.push(temp);
+    }
+    var output = {
+        "portfolio_id": portfolio_id,
+        "symbols": array
+    };
+    return output;
+}
+
+function getPortfolioTS(portfolio_id){
+    const portfolios = getExistingPortfolios();
+    const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == portfolio_id)[0];
+
+    return new PortfolioSheet(selected_portfolio['name']);
 }
