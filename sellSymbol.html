@@ -45,13 +45,8 @@
       .portfolio_currency_amount{
         margin-left: 5px;
       }
-      .diversifications{
-        margin: 10px;
+      .symbol_loading{
         display: none;
-      }
-      .diversification_obj{
-        margin-bottom: 5px;
-        display: flex;
       }
     </style>
 
@@ -116,13 +111,13 @@
         var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
 
         if (portfolio['symbols'] === undefined){
-          var el = document.getElementsByClassName("symbols_select_container")[0];
-          el.innerHTML = '<img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">';
+          document.getElementById("symbol").innerHTML = '<option value="" selected disabled>------------</option>';
+          document.getElementsByClassName("symbol_loading")[0].style.display = 'block';
           google.script.run.withSuccessHandler(acceptPortfolioSymbols).getPortfolioSymbols(portfolio_id);
           return;
         }
         
-        var html = '<div class="symbols_select">Выберете актив для продажи:</div><select name="symbols" id="symbols"><option value="" selected disabled>------------</option>';
+        var html = '<option value="" selected disabled>------------</option>';
 
         for (var i in portfolio['symbols']){
           var symbol = portfolio['symbols'][i];
@@ -130,9 +125,11 @@
         }
         html += '</select>';
 
-        var el = document.getElementsByClassName("symbols_select_container")[0].innerHTML = html;
-        document.getElementById("symbol").addEventListener("change", (e) => {
-          document.getElementsByClassName("symbol")[0].innerHTML = "";
+        document.getElementsByClassName("symbol_loading")[0].style.display = 'none';
+        var el = document.getElementById("symbol");
+        el.innerHTML = html;
+        el.addEventListener("change", (e) => {
+          document.getElementsByClassName("symbol")[0].innerHTML = '';
           symbol_changed();
         });
       }
@@ -185,10 +182,11 @@
     </div>
     <div class="symbols_select_container">
       <div class="symbols_select">Выберете актив для продажи:</div>
-      <select name="symbols" id="symbols">
+      <select name="symbol" id="symbol">
         <option value="" selected disabled>------------</option>
       </select>
-    </div>
+      <img class="loading symbol_loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+      </div>
     <div class="symbol">
 
     </div>

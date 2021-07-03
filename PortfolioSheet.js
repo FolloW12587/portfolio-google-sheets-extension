@@ -197,7 +197,8 @@ PortfolioSheet.prototype.subSymbol = function(data){
             var options = {
                 "Дата закрытия": new Date(),
                 "Кол-во закрытых": data['Кол-во закрытых'] + row[this.columns['Кол-во закрытых']],
-                "Цена Закрытия": (data['Кол-во закрытых']*data['Цена Закрытия'] + row[this.columns['Кол-во закрытых']]*row[this.columns['Цена Закрытия']]) / (data['Кол-во закрытых'] + row[this.columns['Кол-во закрытых']])
+                "Цена Закрытия": (data['Кол-во закрытых']*data['Цена Закрытия'] + row[this.columns['Кол-во закрытых']]*row[this.columns['Цена Закрытия']]) / (data['Кол-во закрытых'] + row[this.columns['Кол-во закрытых']]),
+                "Кол-во акций": row[this.columns['Кол-во акций']] - data['Кол-во закрытых'],
             };
             this.updateRow(options, this.data_starts + parseInt(i));
             return;

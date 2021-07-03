@@ -25,17 +25,17 @@ function sellSymbols(){
 function applySymbols(data, type){
     var portfolioTS = getPortfolioTS(data['portfolio_id']);
 
-    var option = {
+    var options = {
         "currency": data['symbol']['currency']['code'],
         "amount": data['count'] * data['price']
     };
     addDeal(data, portfolioTS.name, type);
     if (type == "Покупка"){
-        portfolioTS.debit(option);
+        portfolioTS.debit(options);
         addSymbol(data, portfolioTS);
     }
     else {
-        portfolioTS.topUp(option);
+        portfolioTS.topUp(options);
         subSymbol(data, portfolioTS);
     }
 }
@@ -62,7 +62,7 @@ function addSymbol(data, portfolioTS){
         "ID Символа": data['symbol']['symbolId'],
         "Дата открытия": new Date(),
         "Наименование": data['symbol']['name'],
-        "Валюта": data['currency']['code'],
+        "Валюта": data['symbol']['currency']['code'],
         "Кол-во акций": data['count'],
         "Цена входа": data['price'],
         "Цена рыночная": "=YARDOFFSYMBOL(R[0]C"+(portfolioTS.columns["ID Символа"]+1)+")",
@@ -81,6 +81,8 @@ function subSymbol(data, portfolioTS){
         "Дата закрытия": new Date(),
         "Кол-во закрытых": data['count'],
         "Цена Закрытия": data['price'],
-        "Валюта": data['currency']['code'],
+        "Валюта": data['symbol']['currency']['code'],
     };
+
+    portfolioTS.subSymbol(options);
 }
