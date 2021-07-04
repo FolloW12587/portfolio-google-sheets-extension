@@ -238,7 +238,7 @@ PortfolioSheet.prototype.createCharts = function(){
         "План по классам активов",
         true,
         Charts.ChartMergeStrategy.MERGE_ROWS,
-        18,
+        16,
         8
     );
     this.createChart(
@@ -247,7 +247,7 @@ PortfolioSheet.prototype.createCharts = function(){
         "План по странам",
         true,
         Charts.ChartMergeStrategy.MERGE_ROWS,
-        18,
+        16,
         12
     );
     this.createChart(
@@ -256,40 +256,40 @@ PortfolioSheet.prototype.createCharts = function(){
         "План по секторам экономики",
         true,
         Charts.ChartMergeStrategy.MERGE_ROWS,
-        18,
+        16,
         16
     );
 
     this.createChart(
-        "D20:D28",
-        "E20:E28",
+        "D17:D25",
+        "E17:E25",
         "Факт по классам активов",
         false,
         Charts.ChartMergeStrategy.MERGE_COLUMNS,
-        31,
+        29,
         8
     );
     this.createChart(
-        "D31:D35",
-        "E31:E35",
+        "D28:D32",
+        "E28:E32",
         "Факт по странам",
         false,
         Charts.ChartMergeStrategy.MERGE_COLUMNS,
-        31,
+        29,
         12
     );
     this.createChart(
-        "D38:D48",
-        "E38:E48",
+        "D35:D45",
+        "E35:E45",
         "Факт по секторам экономики",
         false,
         Charts.ChartMergeStrategy.MERGE_COLUMNS,
-        31,
+        29,
         16
     );
 }
 
-PortfolioSheet.prototype.createChart = function(range_header_str, range_values_str, title, transpose, merge_strategy, x, y, width=400, height=250){
+PortfolioSheet.prototype.createChart = function(range_header_str, range_values_str, title, transpose, merge_strategy, row, col, width=400, height=250){
     var rangeHeader = this.sheet.getRange(range_header_str);
     var rangeValues = this.sheet.getRange(range_values_str);
     var chart = this.sheet.newChart()
@@ -302,7 +302,7 @@ PortfolioSheet.prototype.createChart = function(range_header_str, range_values_s
         .setOption("is3D", true)
         .setOption('width', width)
         .setOption('height', height)
-        .setPosition(x, y, 0, 0)
+        .setPosition(row, col, 0, 0)
         .build()
     this.sheet.insertChart(chart);
 }

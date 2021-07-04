@@ -45,8 +45,8 @@
           period: document.getElementById("period").value,
         }
 
-        document.getElementsByClassName("button")[0].disabled = true,
-        document.getElementsByClassName("loading_close")[0].style.display = 'block',
+        document.getElementsByClassName("button")[0].disabled = true
+        document.getElementsByClassName("loading_close")[0].style.display = 'block'
         google.script.run.withSuccessHandler(close).newPortfolio2(data);
       }
 

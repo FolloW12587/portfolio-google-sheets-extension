@@ -129,7 +129,7 @@ function topUp(){
     }
 
     var html = HtmlService.createHtmlOutputFromFile('topUp')
-        .setWidth(400)
+        .setWidth(450)
         .setHeight(400);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Пополнение портфеля');

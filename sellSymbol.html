@@ -89,6 +89,8 @@
           "price": price
         };
 
+        document.getElementsByClassName("button")[0].disabled = true
+        document.getElementsByClassName("loading_close")[0].style.display = 'block'
         google.script.run.withSuccessHandler(close).applySymbols(data, "Продажа");
       }
 

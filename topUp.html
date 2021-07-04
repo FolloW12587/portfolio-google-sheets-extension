@@ -40,6 +40,9 @@
           "amount": parseFloat(amount_node.value),
           "currency": portfolio['currency']
         };
+
+        document.getElementsByClassName("button")[0].disabled = true
+        document.getElementsByClassName("loading_close")[0].style.display = 'block'
         google.script.run.withSuccessHandler(close).applyTopUp(data);
       }
 
