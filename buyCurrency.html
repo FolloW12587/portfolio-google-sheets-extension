@@ -49,6 +49,9 @@
       .currency{
         display: none;
       }
+      .loading_close{
+        display: none;
+      }
     </style>
 
     <script>
@@ -57,6 +60,10 @@
         "USD": "$",
         "EUR": "€"
       };
+
+      function close(){
+        google.script.host.close();
+      }
 
       function buy(){
         const portfolio_id = parseInt(document.getElementById("portfolio").value);
@@ -99,8 +106,7 @@
           "currency": currency_code
         };
 
-        google.script.run.applyCurrency(data, "Покупка");
-        google.script.host.close();
+        google.script.run.withSuccessHandler(close).applyCurrency(data, "Покупка");
       }
 
       function applyPortfolios(portfolios){
@@ -233,6 +239,9 @@
         <input type="text" class="parameter_value" id="price">
       </div>
     </div>
-    <button class="button" onclick="buy()">Купить</button>
+    <div class="action">
+      <button class="button" onclick="buy()">Купить</button>
+      <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
   </body>
 </html>

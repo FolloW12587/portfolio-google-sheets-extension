@@ -48,9 +48,17 @@
       .symbol_loading{
         display: none;
       }
+      .loading_close{
+        display: none;
+      }
     </style>
 
     <script>
+
+      function close(){
+        google.script.host.close();
+      }
+
       function sell(){
         var portfolio_id = document.getElementById("portfolio").value;
         var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];
@@ -81,8 +89,7 @@
           "price": price
         };
 
-        google.script.run.applySymbols(data, "Продажа");
-        google.script.host.close();
+        google.script.run.withSuccessHandler(close).applySymbols(data, "Продажа");
       }
 
       function applyPortfolios(portfolios){
@@ -190,6 +197,9 @@
     <div class="symbol">
 
     </div>
-    <button class="button" onclick="sell()">Продать</button>
+    <div class="action">
+      <button class="button" onclick="sell()">Продать</button>
+      <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
   </body>
 </html>

@@ -87,20 +87,26 @@ PortfolioSheet.prototype.createHeaderFormulas = function(){
 }
 
 PortfolioSheet.prototype.createDiversificationFormulas = function(){
-    var formulas = [
+    this.updateDiversificationFormulas(
+        9,
         ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Тип']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Тип']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Тип']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Тип']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Тип']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Тип']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Тип']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Тип']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Страна']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Страна']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Страна']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Страна']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Сектор']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Сектор']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Сектор']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Сектор']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Сектор']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Сектор']+1)+"))"], 
-        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Сектор']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Сектор']+1)+"))"]
-    ];
+        "F18:F26"
+    );
+    this.updateDiversificationFormulas(
+        5,
+        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Страна']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Страна']+1)+"))"],
+        "F29:F33"
+    );
+    this.updateDiversificationFormulas(
+        11,
+        ["=sumproduct(R"+this.data_starts+"C"+(this.columns['Текущая стоимость']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Текущая стоимость']+1)+";(R[0]C[-2]=R"+this.data_starts+"C"+(this.columns['Сектор']+1)+":R"+(this.data_starts+1)+"C"+(this.columns['Сектор']+1)+"))"],
+        "F36:F46"
+    );
+}
 
-    var range = this.sheet.getRange("F29:F38");
+PortfolioSheet.prototype.updateDiversificationFormulas = function(count, formula, range_str){
+    var formulas = Array(count).fill(formula);
+    var range = this.sheet.getRange(range_str);
     range.setValues(formulas);
 }
 
@@ -211,4 +217,92 @@ PortfolioSheet.prototype.subSymbol = function(data){
             return;
         }
     }
+}
+
+PortfolioSheet.prototype.createCharts = function(){
+    var portfoliosListTS = new TableSheet("Портфели", 3);
+    var data = portfoliosListTS.getData();
+    var index;
+    for (var i in data){
+        if (data[i][portfoliosListTS.columns["Название"]] != this.name){
+            continue;
+        }
+
+        index = parseInt(i) + portfoliosListTS.data_starts;
+        break;
+    }
+
+    this.createChart(
+        "'Портфели'!O1:W1",
+        `'Портфели'!O${index}:W${index}`,
+        "План по классам активов",
+        true,
+        Charts.ChartMergeStrategy.MERGE_ROWS,
+        18,
+        8
+    );
+    this.createChart(
+        "'Портфели'!X1:AB1",
+        `'Портфели'!X${index}:AB${index}`,
+        "План по странам",
+        true,
+        Charts.ChartMergeStrategy.MERGE_ROWS,
+        18,
+        12
+    );
+    this.createChart(
+        "'Портфели'!AC1:AM1",
+        `'Портфели'!AC${index}:AM${index}`,
+        "План по секторам экономики",
+        true,
+        Charts.ChartMergeStrategy.MERGE_ROWS,
+        18,
+        16
+    );
+
+    this.createChart(
+        "D20:D28",
+        "E20:E28",
+        "Факт по классам активов",
+        false,
+        Charts.ChartMergeStrategy.MERGE_COLUMNS,
+        31,
+        8
+    );
+    this.createChart(
+        "D31:D35",
+        "E31:E35",
+        "Факт по странам",
+        false,
+        Charts.ChartMergeStrategy.MERGE_COLUMNS,
+        31,
+        12
+    );
+    this.createChart(
+        "D38:D48",
+        "E38:E48",
+        "Факт по секторам экономики",
+        false,
+        Charts.ChartMergeStrategy.MERGE_COLUMNS,
+        31,
+        16
+    );
+}
+
+PortfolioSheet.prototype.createChart = function(range_header_str, range_values_str, title, transpose, merge_strategy, x, y, width=400, height=250){
+    var rangeHeader = this.sheet.getRange(range_header_str);
+    var rangeValues = this.sheet.getRange(range_values_str);
+    var chart = this.sheet.newChart()
+        .setChartType(Charts.ChartType.PIE)
+        .setTransposeRowsAndColumns(transpose)
+        .setMergeStrategy(merge_strategy)
+        .addRange(rangeHeader)
+        .addRange(rangeValues)
+        .setOption("title", title)
+        .setOption("is3D", true)
+        .setOption('width', width)
+        .setOption('height', height)
+        .setPosition(x, y, 0, 0)
+        .build()
+    this.sheet.insertChart(chart);
 }

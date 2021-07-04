@@ -39,6 +39,10 @@ function newPortfolio4(data, countries){
 
 function newPortfolioLast(data, economy_sectors){
     updateObjectsDiversification(data, economy_sectors);
+    var portfolios = getExistingPortfolios();
+    var portfolio = portfolios[portfolios.length - 1];
+    var portfolioTS = new PortfolioSheet(portfolio['name']);
+    portfolioTS.createCharts();
 }
 
 function createNewPortfolio(data){
@@ -83,48 +87,7 @@ function addPortfolioSheet(data, row_index){
 
     var refillTS = new TableSheet("График.Платежей_шаблон");
     refillTS.rename("График.Платежей_шаблон."+data['name']);
-    // updateFormulas(portfolioTS, row_index);
 }
-
-// function updateFormulas(portfolioTS, row_index){
-//     updateTypeFormulas(portfolioTS, row_index);
-//     updateCountryFormulas(portfolioTS, row_index);
-//     updateObjFormulas(portfolioTS, row_index);
-// }
-
-// function updateTypeFormulas(portfolioTS, row_index){
-//     var index = 6;
-//     var value_char = "H";
-//     var range = portfolioTS.sheet.getRange("G6:G10");
-//     updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
-// }
-
-// function updateCountryFormulas(portfolioTS, row_index){
-//     var index = 6;
-//     var value_char = "L";
-//     var range = portfolioTS.sheet.getRange("K6:K9");
-//     updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
-// }
-
-// function updateEconomyFormulas(portfolioTS, row_index){
-//     var index = 6;
-//     var value_char = "J";
-//     var range = portfolioTS.sheet.getRange("I6:I9");
-//     updateObjFormulas(portfolioTS, range.getValues(), value_char, index, row_index);
-// }
-
-// function updateObjFormulas(portfolioTS, values, value_char, index, row_index){
-//     var portfoliosListTS = new TableSheet("Портфели", 3);
-//     for (var i in values){
-//         var name = values[i][0];
-
-//         var range = portfoliosListTS.sheet.getRange(row_index, portfoliosListTS.columns[name] + 1);
-//         var range_str = range.getA1Notation();
-
-//         var pRange = portfolioTS.sheet.getRange(value_char + (index + parseInt(i)));
-//         pRange.setValue("=Портфели!"+range_str+"/100");
-//     }
-// }
 
 function updateObjectsDiversification(data, object){
     var portfoliosListTS = new TableSheet("Портфели", 3);

@@ -53,9 +53,17 @@
         margin-bottom: 5px;
         display: flex;
       }
+      .loading_close{
+        display: none;
+      }
     </style>
 
     <script>
+
+      function close(){
+        google.script.host.close();
+      }
+
       function buy(){
         const select = document.getElementById("symbol_select");
         if (select == null || select.value == "0"){
@@ -118,8 +126,7 @@
           "economy_sector": economy_sector[0]['name'],
         };
 
-        google.script.run.applySymbols(data, "Покупка");
-        google.script.host.close();
+        google.script.run.withSuccessHandler(close).applySymbols(data, "Покупка");
       }
 
       function findSymbols(){
@@ -396,6 +403,9 @@
         <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
       </div>
     </div>
-    <button class="button" onclick="buy()">Купить</button>
+    <div class="action">
+      <button class="button" onclick="buy()">Купить</button>
+      <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
   </body>
 </html>

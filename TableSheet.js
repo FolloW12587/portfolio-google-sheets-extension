@@ -3,7 +3,10 @@ TEMPLATE_URL = "https://docs.google.com/spreadsheets/d/1BOdtjztnjySzfZYL8TCwv7_J
 class TableSheet{
     constructor(name, data_starts=2, header_at=1){
         this.name = name;
+        
+        /** @type {GoogleAppsScript.Spreadsheet.Sheet} */
         this.sheet = this.getSheet();
+        
         this.header_at = header_at;
         this.data_starts = data_starts;
         this.columns = {};

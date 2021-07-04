@@ -16,9 +16,16 @@
         width: 25px;
         height: 25px;
       }
+      .loading_close{
+        display: none;
+      }
     </style>
 
     <script>
+      function close(){
+        google.script.host.close();
+      }
+
       function topUp(){
         var amount_node = document.getElementById("amount");
         if (amount_node.value == "" || isNaN(parseFloat(amount_node.value))){
@@ -33,8 +40,7 @@
           "amount": parseFloat(amount_node.value),
           "currency": portfolio['currency']
         };
-        google.script.run.applyTopUp(data);
-        google.script.host.close();
+        google.script.run.withSuccessHandler(close).applyTopUp(data);
       }
 
       function applyPortfolios(portfolios){
@@ -84,6 +90,9 @@
       <div class="amount_currency" id="amount_currency">[]</div>
     </div>
     
-    <button class="button" onclick="topUp()">Пополнить</button>
+    <div class="action">
+      <button class="button" onclick="topUp()">Пополнить</button>
+      <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
   </body>
 </html>

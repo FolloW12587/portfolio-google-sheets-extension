@@ -46,16 +46,36 @@ function Test(){
     var plTS = new TableSheet("Портфели");
     var rangeHeader = plTS.sheet.getRange("O1:W1");
     var rangeValues = plTS.sheet.getRange("O3:W3");
-    var chart = sheet.getCharts()[1];
-    chart = chart.modify()
-        .setChartType(Charts.ChartType.PIE)
-        .addRange(rangeValues)
-        .addRange(rangeHeader)
-        .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_ROWS)
-        // .setNumHeaders(rangeValues.getValues()[0].length)
-        .setTransposeRowsAndColumns(true)
-        .setOption("title", "План по классам типов")
-        .setOption("is3D", true)
-        .build()
-    sheet.updateChart(chart);
-  }
+    var chart = sheet.newChart()
+      .setChartType(Charts.ChartType.PIE)
+      .setTransposeRowsAndColumns(true)
+      .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_ROWS)
+      .addRange(rangeHeader)
+      .addRange(rangeValues)
+      .setOption("title", "План по классам активов")
+      .setOption("is3D", true)
+      .setOption('width', 400)
+      .setOption('height', 250)
+      .setPosition(18, 8, 0, 0)
+      .build()
+    sheet.insertChart(chart);
+}
+  
+function Test2(){
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var rangeHeader = sheet.getRange("D20:D28");
+    var rangeValues = sheet.getRange("E20:E28");
+    var chart = sheet.newChart()
+      .setChartType(Charts.ChartType.PIE)
+      // .setTransposeRowsAndColumns(true)
+      .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_COLUMNS)
+      .addRange(rangeHeader)
+      .addRange(rangeValues)
+      .setOption("title", "Факт по классам активов")
+      .setOption("is3D", true)
+      .setOption('width', 400)
+      .setOption('height', 250)
+      .setPosition(31, 8, 0, 0)
+      .build()
+    sheet.insertChart(chart);
+}

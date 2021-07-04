@@ -16,6 +16,17 @@
       .counter{ 
         margin: 20px;
       }
+      .action{
+        display: flex;
+      }
+      .loading{
+        margin-left: 10px;
+        width: 25px;
+        height: 25px;
+      }
+      .loading_close{
+        display: none;
+      }
     </style>
 
     <script>
@@ -34,7 +45,12 @@
           period: document.getElementById("period").value,
         }
 
-        google.script.run.newPortfolio2(data);
+        document.getElementsByClassName("button")[0].disabled = true,
+        document.getElementsByClassName("loading_close")[0].style.display = 'block',
+        google.script.run.withSuccessHandler(close).newPortfolio2(data);
+      }
+
+      function close(){
         google.script.host.close();
       }
     </script>
@@ -96,6 +112,9 @@
       </select>
     </div>
     <div class="counter">1 из 4</div>
-    <button class="button" onclick="next()">Далее</button>
+    <div class="action">
+      <button class="button" onclick="next()">Далее</button>
+      <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
   </body>
 </html>

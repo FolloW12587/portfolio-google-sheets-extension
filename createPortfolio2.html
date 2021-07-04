@@ -30,6 +30,12 @@
       .symbol_type_input{
         margin-left: 5px;
       }
+      .action{
+        display: flex;
+      }
+      .loading_close{
+        display: none;
+      }
     </style>
 
     <script>
@@ -50,13 +56,18 @@
           return;
         }
 
-        google.script.run.newPortfolio3(data, window.symbol_types);
-        google.script.host.close();
+        document.getElementsByClassName("button")[0].disabled = true,
+        document.getElementsByClassName("loading_close")[0].style.display = 'block',
+        google.script.run.withSuccessHandler(close).newPortfolio3(data, window.symbol_types);
       }
       
       function document_loaded(){
         get_symbol_types();
         get_symbol_types_diversifications();
+      }
+
+      function close(){
+        google.script.host.close();
       }
       
       function get_symbol_types(){
@@ -169,6 +180,9 @@
       <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
     </div>
     <div class="counter">2 из 4</div>
-    <button class="button" onclick="next()">Далее</button>
+    <div class="action">
+      <button class="button" onclick="next()">Далее</button>
+      <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
+    </div>
   </body>
 </html>
