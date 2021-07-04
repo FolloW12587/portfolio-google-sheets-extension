@@ -174,7 +174,7 @@ function topUp(){
 }
 
 function applyTopUp(data){
-    const portfolioTS = getPortfolioTS(portfolio_id);
+    const portfolioTS = getPortfolioTS(data['portfolio_id']);
     portfolioTS.topUp(data);
 }
 

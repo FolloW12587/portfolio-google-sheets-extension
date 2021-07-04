@@ -129,9 +129,16 @@ PortfolioSheet.prototype.topUp = function(data){
             continue;
         
         var options = {
-            "Кол-во акций": amountData[i][this.columns["Кол-во акций"]] + data['amount']
+            "Кол-во акций": amountData[i][this.columns["Кол-во акций"]] + data['amount'],
         };
 
+        if (data['price'] !== undefined){
+            options["Цена входа"] = (data['amount']*data['price'] + amountData[i][this.columns['Кол-во акций']]*amountData[i][this.columns['Цена входа']]) / (data['amount'] + amountData[i][this.columns['Кол-во акций']]);
+        }
+        Logger.log(options);
+        Logger.log(this.columns);
+        Logger.log(amountData);
+        Logger.log(data);
         this.updateRow(options, this.getAmountStarts() + parseInt(i));
         return;
     }
@@ -160,7 +167,7 @@ PortfolioSheet.prototype.addSymbol = function(data){
             continue;
         
         data['Цена входа'] = data['Цена входа'] * amountData[i][this.columns["Цена рыночная"]];
-        data['Цена рыночная'] = `${data['Цена рыночная']}*R${(this.getAmountStarts() + parseInt(i))}C${(this.columns["Цена рыночная"]+1)}`;
+        data['Цена рыночная'] = `${data['Цена рыночная']}*R${(this.getAmountStarts() + parseInt(i) + 1)}C${(this.columns["Цена рыночная"]+1)}`;
         break;
     }
     
