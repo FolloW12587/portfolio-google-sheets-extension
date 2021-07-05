@@ -78,6 +78,7 @@ function addPortfolioRow(data){
 function addPortfolioSheet(data, row_index){
     var portfolioTS = new PortfolioSheet("Портфель_шаблон");
     portfolioTS.rename(data['name']);
+    portfolioTS.setCurrency(data);
 
     var options = {
         "currency": data['currency'],

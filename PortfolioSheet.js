@@ -306,3 +306,23 @@ PortfolioSheet.prototype.createChart = function(range_header_str, range_values_s
         .build()
     this.sheet.insertChart(chart);
 }
+
+PortfolioSheet.prototype.setCurrency = function(data){
+    var amountData = this.getAmountData();
+
+    for (var i in amountData){
+        var row = amountData[i];
+        if (row[this.columns['Тикер']] == data['currency']){
+            var option = {
+                "ID Символа": "",
+                "Цена рыночная": 1
+            };
+        } else {
+            var option = {
+                "ID Символа": `${row[this.columns['Тикер']]}/${data['currency']}`,
+                "Цена рыночная": `=YARDOFFCURRENCYRATE(R[0]C${this.columns["ID Символа"] + 1})`
+            };
+        }
+        this.updateRow(option, this.getAmountStarts() + parseInt(i));
+    }
+}

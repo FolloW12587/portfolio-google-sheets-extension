@@ -4,7 +4,7 @@ function buyCurrency(){
     }
 
     var html = HtmlService.createHtmlOutputFromFile('buyCurrency')
-        .setWidth(500)
+        .setWidth(550)
         .setHeight(550);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Купить Валюту');
