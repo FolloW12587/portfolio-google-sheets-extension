@@ -129,7 +129,7 @@
           "economy_sector": economy_sector[0]['name'],
         };
 
-        document.getElementsByClassName("button")[0].disabled = true
+        document.getElementsByClassName("buy_button")[0].disabled = true
         document.getElementsByClassName("loading_close")[0].style.display = 'block'
         google.script.run.withSuccessHandler(close).applySymbols(data, "Покупка");
       }
@@ -393,7 +393,7 @@
     </div>
     <div class="diversifications">
       <div class="diversification_type diversification_obj">
-        <div class="diversification_label">Отнести к типу:</div>
+        <div class="diversification_label">Отнести к классу:</div>
         <select name="diversification_type" id="diversification_type"></select>
         <img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
       </div>
@@ -409,7 +409,7 @@
       </div>
     </div>
     <div class="action">
-      <button class="button" onclick="buy()">Купить</button>
+      <button class="button buy_button" onclick="buy()">Купить</button>
       <img class="loading loading_close" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">
     </div>
   </body>

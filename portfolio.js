@@ -16,7 +16,7 @@ function newPortfolio2(data){
         .setWidth(400)
         .setHeight(400);
     SpreadsheetApp.getUi()
-        .showModalDialog(html, 'Диверсификация по типам ценных бумаг');
+        .showModalDialog(html, 'Диверсификация по классам активов');
 }
 
 function newPortfolio3(data, symbol_types){
@@ -64,6 +64,7 @@ function addPortfolioRow(data){
         "Первый платеж": data['start_capital'],
         "Валюта портфеля": data['currency'],
         "Периодичность внесения": data['period'],
+        "Даты платежей": data['period_dates'],
         "Брокер": data['broker'],
     };
 
@@ -131,7 +132,7 @@ function topUp(){
 
     var html = HtmlService.createHtmlOutputFromFile('topUp')
         .setWidth(450)
-        .setHeight(400);
+        .setHeight(200);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Пополнение портфеля');
 

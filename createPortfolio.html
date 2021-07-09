@@ -43,6 +43,7 @@
           start_capital: document.getElementById("start_capital").value,
           broker: document.getElementById("broker").value,
           period: document.getElementById("period").value,
+          period_dates: document.getElementById("period_dates").value,
         }
 
         document.getElementsByClassName("button")[0].disabled = true
@@ -52,6 +53,23 @@
 
       function close(){
         google.script.host.close();
+      }
+
+      document.addEventListener("DOMContentLoaded",  document_loaded);
+
+      function document_loaded(){
+        document.getElementById("period").addEventListener("change", period_changed);
+      }
+
+      function period_changed(e){
+        var period = document.getElementById("period").value;
+        var html = '';
+        if (period == "Раз в месяц"){
+          html += '<option value="1" selected>1</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="28">28</option>';
+        } else if (period == "Раз в неделю"){
+          html += '<option value="Понедельник" selected>Понедельник</option><option value="Вторник">Вторник</option><option value="Среда">Среда</option><option value="Четверг">Четверг</option><option value="Пятница">Пятница</option><option value="Суббота">Суббота</option><option value="Воскресенье">Воскресенье</option>';
+        }
+        document.getElementById("period_dates").innerHTML = html;
       }
     </script>
   </head>
@@ -96,7 +114,7 @@
       <input type="text" name="start_capital" id="start_capital" class="parametr_value">
     </div>
     <div class="parametr">
-      <div class="parametr_name">Периодический платеж: </div>
+      <div class="parametr_name">Сумма регулярного пополнения: </div>
       <input type="text" name="period_topup" id="period_topup" class="parametr_value">
     </div>
     <div class="parametr">
@@ -108,7 +126,18 @@
       <select name="period" id="period">
         <option value="Раз в неделю">Раз в неделю</option>
         <option value="Раз в месяц" selected>Раз в месяц</option>
-        <option value="Каждый день">Каждый день</option>
+      </select>
+    </div>
+    <div class="parametr">
+      <div class="parametr_name">Даты платежей: </div>
+      <select name="period_dates" id="period_dates">
+        <option value="1" selected>1</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="28">28</option>
       </select>
     </div>
     <div class="counter">1 из 4</div>

@@ -5,7 +5,7 @@ function buyCurrency(){
 
     var html = HtmlService.createHtmlOutputFromFile('buyCurrency')
         .setWidth(550)
-        .setHeight(550);
+        .setHeight(300);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Купить Валюту');
 }
@@ -17,7 +17,7 @@ function sellCurrency(){
 
     var html = HtmlService.createHtmlOutputFromFile('sellCurrency')
         .setWidth(500)
-        .setHeight(550);
+        .setHeight(300);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Продать Валюту');
 }

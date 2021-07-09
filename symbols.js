@@ -17,7 +17,7 @@ function sellSymbols(){
 
     var html = HtmlService.createHtmlOutputFromFile('sellSymbol')
         .setWidth(400)
-        .setHeight(400);
+        .setHeight(350);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Продать актив');
 }

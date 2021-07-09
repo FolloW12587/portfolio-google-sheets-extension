@@ -1,8 +1,8 @@
 function onOpen(){
     var ui = SpreadsheetApp.getUi();
     ui.createAddonMenu()
-        .addItem("Настроить документ", "startWorking")
-        .addItem("Добавить портфель", "newPortfolio")
+        .addItem("Загрузить шаблон", "startWorking")
+        .addItem("Создать портфель", "newPortfolio")
         .addSeparator()
         .addItem("Пополнить портфель", "topUp")
         .addSubMenu(ui.createMenu("Активы")
