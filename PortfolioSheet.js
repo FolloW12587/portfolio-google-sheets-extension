@@ -141,10 +141,6 @@ PortfolioSheet.prototype.topUp = function(data){
         if (data['price'] !== undefined){
             options["Цена входа"] = (data['amount']*data['price'] + amountData[i][this.columns['Кол-во акций']]*amountData[i][this.columns['Цена входа']]) / (data['amount'] + amountData[i][this.columns['Кол-во акций']]);
         }
-        Logger.log(options);
-        Logger.log(this.columns);
-        Logger.log(amountData);
-        Logger.log(data);
         this.updateRow(options, this.getAmountStarts() + parseInt(i));
         return;
     }
@@ -231,8 +227,9 @@ PortfolioSheet.prototype.createCharts = function(){
         index = parseInt(i) + portfoliosListTS.data_starts;
         break;
     }
+    var refillTS = new TableSheet(`График.Платежей.${this.name}`, 3, 2);
 
-    this.createChart(
+    this.createPieChart(
         "'Портфели'!O1:W1",
         `'Портфели'!O${index}:W${index}`,
         "План по классам активов",
@@ -241,7 +238,7 @@ PortfolioSheet.prototype.createCharts = function(){
         16,
         8
     );
-    this.createChart(
+    this.createPieChart(
         "'Портфели'!X1:AB1",
         `'Портфели'!X${index}:AB${index}`,
         "План по странам",
@@ -250,7 +247,7 @@ PortfolioSheet.prototype.createCharts = function(){
         16,
         12
     );
-    this.createChart(
+    this.createPieChart(
         "'Портфели'!AC1:AM1",
         `'Портфели'!AC${index}:AM${index}`,
         "План по секторам экономики",
@@ -260,7 +257,7 @@ PortfolioSheet.prototype.createCharts = function(){
         16
     );
 
-    this.createChart(
+    this.createPieChart(
         "D17:D25",
         "E17:E25",
         "Факт по классам активов",
@@ -269,7 +266,7 @@ PortfolioSheet.prototype.createCharts = function(){
         29,
         8
     );
-    this.createChart(
+    this.createPieChart(
         "D28:D32",
         "E28:E32",
         "Факт по странам",
@@ -278,7 +275,7 @@ PortfolioSheet.prototype.createCharts = function(){
         29,
         12
     );
-    this.createChart(
+    this.createPieChart(
         "D35:D45",
         "E35:E45",
         "Факт по секторам экономики",
@@ -287,9 +284,24 @@ PortfolioSheet.prototype.createCharts = function(){
         29,
         16
     );
+    this.createLineChart(
+        [
+            `'График.Платежей.${portfolioTS.name}'!B2:B${refillTS.sheet.getLastRow()}`,
+            `'График.Платежей.${portfolioTS.name}'!F2:F${refillTS.sheet.getLastRow()}`,
+            `'График.Платежей.${portfolioTS.name}'!G2:G${refillTS.sheet.getLastRow()}`,
+            `'График.Платежей.${portfolioTS.name}'!I2:I${refillTS.sheet.getLastRow()}`
+        ],
+        "План роста капитала",
+        false,
+        Charts.ChartMergeStrategy.MERGE_COLUMNS,
+        42,
+        8,
+        600,
+        400
+    );
 }
 
-PortfolioSheet.prototype.createChart = function(range_header_str, range_values_str, title, transpose, merge_strategy, row, col, width=400, height=250){
+PortfolioSheet.prototype.createPieChart = function(range_header_str, range_values_str, title, transpose, merge_strategy, row, col, width=400, height=250){
     var rangeHeader = this.sheet.getRange(range_header_str);
     var rangeValues = this.sheet.getRange(range_values_str);
     var chart = this.sheet.newChart()
@@ -304,6 +316,27 @@ PortfolioSheet.prototype.createChart = function(range_header_str, range_values_s
         .setOption('height', height)
         .setPosition(row, col, 0, 0)
         .build()
+    this.sheet.insertChart(chart);
+}
+
+PortfolioSheet.prototype.createLineChart = function(ranges_str_list, title, transpose, merge_strategy, row, col, width=400, height=250){
+    var ranges = [];
+    for (var i in ranges_str_list){
+        ranges.push(this.sheet.getRange(ranges_str_list[i]));
+    }
+    var chartBuilder = this.sheet.newChart()
+        .setChartType(Charts.ChartType.LINE)
+        .setTransposeRowsAndColumns(transpose)
+        .setNumHeaders(1)
+        .setMergeStrategy(merge_strategy)
+        .setOption("title", title)
+        .setOption('width', width)
+        .setOption('height', height)
+        .setPosition(row, col, 0, 0);
+    for (var i in ranges){
+        chartBuilder = chartBuilder.addRange(ranges[i])
+    }
+    var chart = chartBuilder.build();
     this.sheet.insertChart(chart);
 }
 

@@ -16,7 +16,16 @@ function onOpen(){
         .addToUi()
 }
 
-NECESSARY_TABLES = ["Портфели", "Тикеры", "Сделки"];
+NECESSARY_TABLES = ["Портфели", "Сделки"];
+WEEK_DAYS = {
+    "Понедельник": 1,
+    "Вторник": 2,
+    "Среда": 3,
+    "Четверг": 4,
+    "Пятница": 5,
+    "Суббота": 6,
+    "Воскресенье": 0
+};
 
 
 function startWorking(){
@@ -37,45 +46,65 @@ function checkExcistingTables(){
     return true;
 }
 
+function getNextWeekdayOfDate(date, weekday){
+    // 6 for monday, 5 for tuesday ...
+    var day = date.getDate() - (date.getDay() + 7 - WEEK_DAYS[weekday]) % 7;
+    date.setDate(day + 7);
+
+    return date;
+}
+
+function getNextDateByDay(date, day){
+    var copy = new Date(date.getTime());
+    copy.setDate(day);
+    if (copy <= date){
+        var d = new Date(copy.getFullYear(), copy.getMonth() + 1, day);
+        return d;
+    } else {
+        return copy;
+    }
+}
+
 function errorHandler(error_type, message){
     SpreadsheetApp.getUi().alert(error_type + ": " + message);
 }
 
 function Test(){
-    var sheet = SpreadsheetApp.getActiveSheet();
-    var plTS = new TableSheet("Портфели");
-    var rangeHeader = plTS.sheet.getRange("O1:W1");
-    var rangeValues = plTS.sheet.getRange("O3:W3");
-    var chart = sheet.newChart()
-      .setChartType(Charts.ChartType.PIE)
-      .setTransposeRowsAndColumns(true)
-      .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_ROWS)
-      .addRange(rangeHeader)
-      .addRange(rangeValues)
-      .setOption("title", "План по классам активов")
-      .setOption("is3D", true)
-      .setOption('width', 400)
-      .setOption('height', 250)
-      .setPosition(18, 8, 0, 0)
-      .build()
-    sheet.insertChart(chart);
-}
-  
+    var data = {
+      profit:20, 
+      start_capital:20000, 
+      age:24, 
+      period_dates:"25", 
+      broker:"БКС", 
+      currency:"RUB", 
+      desc:"Тест графиков пополнений", 
+      goal:1000000, 
+      period:"Раз в месяц", 
+      term:10, 
+      period_topup:10000, 
+      name:"Графики"
+    };
+    newPortfolio2(data);
+  }
+
 function Test2(){
-    var sheet = SpreadsheetApp.getActiveSheet();
-    var rangeHeader = sheet.getRange("D20:D28");
-    var rangeValues = sheet.getRange("E20:E28");
-    var chart = sheet.newChart()
-      .setChartType(Charts.ChartType.PIE)
-      // .setTransposeRowsAndColumns(true)
-      .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_COLUMNS)
-      .addRange(rangeHeader)
-      .addRange(rangeValues)
-      .setOption("title", "Факт по классам активов")
-      .setOption("is3D", true)
-      .setOption('width', 400)
-      .setOption('height', 250)
-      .setPosition(31, 8, 0, 0)
-      .build()
-    sheet.insertChart(chart);
+    var portfolioTS = new PortfolioSheet("Графики");
+
+    var refillTS = new TableSheet(`График.Платежей.${portfolioTS.name}`, 3, 2);
+
+    portfolioTS.createLineChart(
+        [
+          `'График.Платежей.${portfolioTS.name}'!B2:B${refillTS.sheet.getLastRow()}`,
+          `'График.Платежей.${portfolioTS.name}'!F2:F${refillTS.sheet.getLastRow()}`,
+          `'График.Платежей.${portfolioTS.name}'!G2:G${refillTS.sheet.getLastRow()}`,
+          `'График.Платежей.${portfolioTS.name}'!I2:I${refillTS.sheet.getLastRow()}`
+        ],
+        "План роста капитала",
+        false,
+        Charts.ChartMergeStrategy.MERGE_COLUMNS,
+        42,
+        8,
+        600,
+        400
+    );
 }

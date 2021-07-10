@@ -87,8 +87,10 @@ function addPortfolioSheet(data, row_index){
     };
     portfolioTS.topUp(options);
 
-    var refillTS = new TableSheet("График.Платежей_шаблон");
-    refillTS.rename("График.Платежей_шаблон."+data['name']);
+    var refillTS = new TableSheet("График.Платежей_шаблон", data_starts=3, header_at=2);
+    refillTS.rename("График.Платежей."+data['name']);
+    Logger.log(data);
+    fillRefillTS(refillTS, data);
 }
 
 function updateObjectsDiversification(data, object){
@@ -180,4 +182,83 @@ function getPortfolioTS(portfolio_id){
     const selected_portfolio = portfolios.filter((portfolio) => portfolio['id'] == portfolio_id)[0];
 
     return new PortfolioSheet(selected_portfolio['name']);
+}
+
+function fillRefillTS(refillTS, data){
+    var d = new Date();
+    d.setFullYear(d.getFullYear() - data['age']);
+    var options = {
+        "Прирост План": data['profit'] / 100,
+        "Возраст": d 
+    };
+    refillTS.updateRow(options, 1);
+    fillFirstRowRefillTS(refillTS, data);
+    fillNextRowsRefillTS(refillTS, data);
+}
+
+function fillFirstRowRefillTS(refillTS, data){
+    var options = {
+        "Дата": new Date(),
+        "Возраст":`=ROUNDDOWN((R[0]C${refillTS.columns['Дата'] + 1}-R1C[0])/365,25+0,01)`,
+        "Доход":`=R1C${refillTS.columns['Прирост План']+1}`,
+        "Пополнение План":data['start_capital'],
+        "Внесете План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}`,
+        "Прирост План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}`,
+        "Пополнение Факт":data['start_capital'],
+        "Баланс Факт":data['start_capital']
+    };
+
+    if(data['period'] == "Раз в месяц"){
+        options['Доход'] += "/12";
+    } else {
+        options['Доход'] += "/52,1429";
+    }
+    refillTS.appendRow(options);
+}
+
+function fillNextRowsRefillTS(refillTS, data){
+    var list = [];
+    var start_date = new Date();
+    var options = {
+        "Дата": new Date(),
+        "Возраст":`=ROUNDDOWN((R[0]C${refillTS.columns['Дата'] + 1}-R1C[0])/365,25+0,01)`,
+        "Доход":`=R1C${refillTS.columns['Прирост План']+1}`,
+        "Пополнение План":data['period_topup'],
+        "Внесете План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}+R[-1]C[0]`,
+        "Прирост План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}+R[-1]C[0]+R[-1]C[0]*R[-1]C${refillTS.columns['Доход'] + 1}`,
+        "Пополнение Факт":0,
+        "Баланс Факт":`=R[0]C${refillTS.columns['Пополнение Факт'] + 1}+R[-1]C[0]`
+    };
+    
+    if(data['period'] == "Раз в месяц"){
+        var dateFunc = getNextDateByDay;
+        options['Доход'] += "/12";
+    } else {
+        var dateFunc = getNextWeekdayOfDate;
+        options['Доход'] += "/52,1429";
+    }
+    options['Дата'] = dateFunc(options['Дата'], data['period_dates']);
+    var columns = refillTS.sheet.getRange(refillTS.header_at, 1, 1, refillTS.sheet.getLastColumn()).getValues()[0];
+    var endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + data['term']);
+    while(options['Дата'] <= endDate){
+        var copy = JSON.parse(JSON.stringify(options));
+        var temp = [];
+        for (var i in columns){
+            if (copy[columns[i]] !== undefined){
+                if (columns[i] == "Дата")
+                    temp.push(new Date(copy[columns[i]]));
+                else 
+                    temp.push(copy[columns[i]]);
+            } else {
+                temp.push("");
+            }
+        }
+        list.push(temp);
+        options['Дата'] = dateFunc(options['Дата'], data['period_dates']);
+    }
+    Logger.log(((new Date()).getTime() - start_date.getTime()) / 1000);
+    start_date = new Date();
+    refillTS.sheet.getRange(refillTS.sheet.getLastRow()+1, 1, list.length, refillTS.sheet.getLastColumn()).setValues(list);
+    Logger.log(((new Date()).getTime() - start_date.getTime())/1000);
 }
