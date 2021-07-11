@@ -62,8 +62,6 @@
     </style>
 
     <script>
-      const BACKENDHOST = "http://178.154.241.87";
-
       function close(){
         google.script.host.close();
       }
@@ -145,22 +143,7 @@
         document.getElementsByClassName("diversifications")[0].style.display = "none";
         document.getElementsByClassName("symbols_select_container")[0]
           .innerHTML = '<img class="loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading">';
-        getSymbols(ticker);
-      }
-
-      function getSymbols(ticker){
-        const Http = new XMLHttpRequest();
-        var url=`${BACKENDHOST}/quotes/symbol?ticker=${encodeURIComponent(ticker)}`;
-
-        Http.open("GET", url);
-        Http.send();
-
-        Http.onreadystatechange = function(e) {
-          if (this.readyState == 4){
-            console.log(this.responseText);
-            updateSymbols(JSON.parse(this.responseText));
-          }
-        }
+        google.script.run.withSuccessHandler(updateSymbols).getSymbols(ticker)
       }
 
       function updateSymbols(symbols){
@@ -264,20 +247,6 @@
           portfolio_changed();
       }
 
-      function get_symbol_types(){
-        const Http = new XMLHttpRequest();
-        const url=`${BACKENDHOST}/quotes/portfolio_symbol_type`;
-        Http.open("GET", url);
-        Http.send();
-
-        Http.onreadystatechange = function(e) {
-          if (this.readyState == 4){
-            console.log(this.responseText);
-            update_symbol_types(JSON.parse(this.responseText));
-          }
-        }
-      }
-
       function update_symbol_types(symbol_types){
         window.symbol_types = symbol_types;
         var html = '';
@@ -289,20 +258,6 @@
         document.getElementById("diversification_type").innerHTML = html;
         var parent = document.getElementsByClassName("diversification_type")[0];
         parent.removeChild(parent.getElementsByTagName("img")[0]);
-      }
-
-      function get_countries(){
-        const Http = new XMLHttpRequest();
-        const url=`${BACKENDHOST}/quotes/country`; 
-        Http.open("GET", url);
-        Http.send();
-        
-        Http.onreadystatechange = function(e) {
-          if (this.readyState == 4){
-            console.log(this.responseText);
-            update_countries(JSON.parse(this.responseText));
-          }
-        }
       }
       
       function update_countries(countries){
@@ -316,20 +271,6 @@
         document.getElementById("diversification_country").innerHTML = html;
         var parent = document.getElementsByClassName("diversification_country")[0];
         parent.removeChild(parent.getElementsByTagName("img")[0]);
-      }
-
-      function get_economy_sectors(){
-        const Http = new XMLHttpRequest();
-        const url=`${BACKENDHOST}/quotes/economy_sector`;
-        Http.open("GET", url);
-        Http.send();
-
-        Http.onreadystatechange = function(e) {
-          if (this.readyState == 4){
-            console.log(this.responseText);
-            update_economy_sectors(JSON.parse(this.responseText));
-          }
-        }
       }
 
       function update_economy_sectors(economy_sectors){
@@ -347,9 +288,9 @@
       }
       
       function document_loaded(){
-        get_symbol_types();
-        get_countries();
-        get_economy_sectors();
+        google.script.run.withSuccessHandler(update_symbol_types).getSymbolTypes()
+        google.script.run.withSuccessHandler(update_countries).getCountries()
+        google.script.run.withSuccessHandler(update_economy_sectors).getEconomySectors()
         google.script.run.withSuccessHandler(applyPortfolios).getExistingPortfolios()
       }
       

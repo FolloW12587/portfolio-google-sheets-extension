@@ -39,7 +39,6 @@
     </style>
 
     <script>
-      const BACKENDHOST = "http://178.154.241.87";
       function next(){
         // var profit = document.getElementById("profit").value;
         var data = {};
@@ -67,36 +66,8 @@
       }
       
       function document_loaded(){
-        get_countries();
-        get_country_diversifications();
-      }
-      
-      function get_countries(){
-        const Http = new XMLHttpRequest();
-        const url=`${BACKENDHOST}/quotes/country`;
-        Http.open("GET", url);
-        Http.send();
-
-        Http.onreadystatechange = function(e) {
-          if (this.readyState == 4){
-            console.log(this.responseText);
-            update_countries(JSON.parse(this.responseText));
-          }
-        }
-      }
-
-      function get_country_diversifications(){
-        const Http = new XMLHttpRequest();
-        const url=`${BACKENDHOST}/quotes/country_diversification`;
-        Http.open("GET", url);
-        Http.send();
-
-        Http.onreadystatechange = function(e) {
-          if (this.readyState == 4){
-            console.log(this.responseText);
-            update_countries_diversification(JSON.parse(this.responseText));
-          }
-        }
+        google.script.run.withSuccessHandler(update_countries).getCountries();
+        google.script.run.withSuccessHandler(update_countries_diversification).getCountryDiversifications();
       }
 
       function update_countries(countries){

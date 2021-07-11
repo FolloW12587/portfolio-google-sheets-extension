@@ -4,7 +4,7 @@ function buySymbols(){
     }
 
     var html = HtmlService.createHtmlOutputFromFile('buySymbol')
-        .setWidth(500)
+        .setWidth(650)
         .setHeight(550);
     SpreadsheetApp.getUi()
         .showModalDialog(html, 'Купить актив');
