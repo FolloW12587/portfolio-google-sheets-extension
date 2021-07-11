@@ -62,6 +62,7 @@
     </style>
 
     <script>
+      const BACKENDHOST = "http://178.154.241.87";
 
       function close(){
         google.script.host.close();
@@ -149,7 +150,7 @@
 
       function getSymbols(ticker){
         const Http = new XMLHttpRequest();
-        var url='http://localhost:8000/quotes/symbol?ticker=' + encodeURIComponent(ticker);  // TODO: change host
+        var url=`${BACKENDHOST}/quotes/symbol?ticker=${encodeURIComponent(ticker)}`;
 
         Http.open("GET", url);
         Http.send();
@@ -265,7 +266,7 @@
 
       function get_symbol_types(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/portfolio_symbol_type';  // TODO: change host
+        const url=`${BACKENDHOST}/quotes/portfolio_symbol_type`;
         Http.open("GET", url);
         Http.send();
 
@@ -292,7 +293,7 @@
 
       function get_countries(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/country';  // TODO: change host
+        const url=`${BACKENDHOST}/quotes/country`; 
         Http.open("GET", url);
         Http.send();
         
@@ -319,7 +320,7 @@
 
       function get_economy_sectors(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/economy_sector';  // TODO: change host
+        const url=`${BACKENDHOST}/quotes/economy_sector`;
         Http.open("GET", url);
         Http.send();
 

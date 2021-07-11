@@ -143,6 +143,20 @@ function topUp(){
 function applyTopUp(data){
     const portfolioTS = getPortfolioTS(data['portfolio_id']);
     portfolioTS.topUp(data);
+    var refillTS = new TableSheet(`График.Платежей.${portfolioTS.name}`, 3, 2);
+    var refillData = refillTS.getData();
+    var d = (new Date()).getTime();
+    var index = 0;
+    for (var i = 0; i < refillData.length; i++){
+        if ((i + 1 == refillData.length) || (d >= refillData[i][refillTS.columns['Дата']].getTime() && d < refillData[i+1][refillTS.columns['Дата']].getTime())){
+            var options = {
+                "Пополнение Факт": data['amount'] + refillData[i][refillTS.columns['Пополнение Факт']]
+            };
+            
+            refillTS.updateRow(options, refillTS.data_starts + i);
+            return;            
+        }
+    }
 }
 
 function getPortfolioAmount(portfolio_id){
@@ -205,7 +219,7 @@ function fillFirstRowRefillTS(refillTS, data){
         "Внесете План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}`,
         "Прирост План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}`,
         "Пополнение Факт":data['start_capital'],
-        "Баланс Факт":data['start_capital']
+        "Внесено Факт":`=R[0]C${refillTS.columns['Пополнение Факт'] + 1}`
     };
 
     if(data['period'] == "Раз в месяц"){
@@ -227,7 +241,7 @@ function fillNextRowsRefillTS(refillTS, data){
         "Внесете План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}+R[-1]C[0]`,
         "Прирост План":`=R[0]C${refillTS.columns['Пополнение План'] + 1}+R[-1]C[0]+R[-1]C[0]*R[-1]C${refillTS.columns['Доход'] + 1}`,
         "Пополнение Факт":0,
-        "Баланс Факт":`=R[0]C${refillTS.columns['Пополнение Факт'] + 1}+R[-1]C[0]`
+        "Внесено Факт":`=R[0]C${refillTS.columns['Пополнение Факт'] + 1}+R[-1]C[0]`
     };
     
     if(data['period'] == "Раз в месяц"){

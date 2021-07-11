@@ -26,6 +26,7 @@ WEEK_DAYS = {
     "Суббота": 6,
     "Воскресенье": 0
 };
+BACKENDHOST = "http://178.154.241.87";
 
 
 function startWorking(){

@@ -2,7 +2,7 @@
 
 class BackendAPI{
     constructor(){
-        this.url = "http://localhost:8000/quotes/";  // TODO: change this
+        this.url = `${BACKENDHOST}/quotes/`;  
     }
 
     getSymbolsByTicker(ticker){

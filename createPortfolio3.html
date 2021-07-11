@@ -39,6 +39,7 @@
     </style>
 
     <script>
+      const BACKENDHOST = "http://178.154.241.87";
       function next(){
         // var profit = document.getElementById("profit").value;
         var data = {};
@@ -72,7 +73,7 @@
       
       function get_countries(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/country';  // TODO: change host
+        const url=`${BACKENDHOST}/quotes/country`;
         Http.open("GET", url);
         Http.send();
 
@@ -86,7 +87,7 @@
 
       function get_country_diversifications(){
         const Http = new XMLHttpRequest();
-        const url='http://localhost:8000/quotes/country_diversification';  // TODO: change host
+        const url=`${BACKENDHOST}/quotes/country_diversification`;
         Http.open("GET", url);
         Http.send();
 

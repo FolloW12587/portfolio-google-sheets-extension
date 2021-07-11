@@ -45,7 +45,7 @@ TableSheet.prototype.getColumns = function(){
 }
 
 TableSheet.prototype.getData = function() {  
-    var rows_count = this.getLastRow();
+    var rows_count = this.getLastRow() - this.data_starts+1;
     var columns_count = this.sheet.getLastColumn();
     return this.sheet.getRange(this.data_starts, 1, rows_count, columns_count).getValues();
 }
