@@ -70,7 +70,7 @@
         var symbol = portfolio['symbols'].filter((s) => s['symbolId'] == symbol_id)[0];
 
         var count = parseInt(document.getElementById("count").value);
-        var price = parseFloat(document.getElementById("price").value);
+        var price = parseFloat(document.getElementById("price").value.replace(",", "."));
 
         if (isNaN(price) || price == null || price == "" || price <= 0){
           alert("Цена не может быть меньше или равняться нулю");

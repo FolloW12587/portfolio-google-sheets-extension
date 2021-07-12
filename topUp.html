@@ -31,7 +31,7 @@
 
       function topUp(){
         var amount_node = document.getElementById("amount");
-        if (amount_node.value == "" || isNaN(parseFloat(amount_node.value))){
+        if (amount_node.value == "" || isNaN(parseFloat(amount_node.value.replace(",", ".")))){
           alert("Введите сумму пополнения!");
           return;
         }
@@ -40,7 +40,7 @@
 
         var data = {
           "portfolio_id": p_node.value,
-          "amount": parseFloat(amount_node.value),
+          "amount": parseFloat(amount_node.value.replace(",", ".")),
           "currency": portfolio['currency']
         };
 

@@ -75,7 +75,7 @@
 
         const symbol = window.symbols.filter((symbol) => symbol['symbolId'] == select.value)[0];
 
-        const price = parseFloat(document.getElementById("price").value);
+        const price = parseFloat(document.getElementById("price").value.replace(",", "."));
         const count = parseInt(document.getElementById("count").value);
         const portfolio_id = parseInt(document.getElementById("portfolio").value);
         var portfolio = window.portfolios.filter((p) => p['id'] == portfolio_id)[0];

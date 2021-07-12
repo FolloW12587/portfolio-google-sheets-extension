@@ -46,7 +46,7 @@
 
         for (var i in window.countries){
           var country = window.countries[i];
-          var country_input_value = parseFloat(document.getElementById(country['id']).value);
+          var country_input_value = parseFloat(document.getElementById(country['id']).value.replace(",", "."));
           data[country['id']] = country_input_value;
           sum += country_input_value;
         }

@@ -286,10 +286,10 @@ PortfolioSheet.prototype.createCharts = function(){
     );
     this.createLineChart(
         [
-            `'График.Платежей.${portfolioTS.name}'!B2:B${refillTS.sheet.getLastRow()}`,
-            `'График.Платежей.${portfolioTS.name}'!F2:F${refillTS.sheet.getLastRow()}`,
-            `'График.Платежей.${portfolioTS.name}'!G2:G${refillTS.sheet.getLastRow()}`,
-            `'График.Платежей.${portfolioTS.name}'!H2:H${refillTS.sheet.getLastRow()}`
+            `'График.Платежей.${this.name}'!B2:B${refillTS.sheet.getLastRow()}`,
+            `'График.Платежей.${this.name}'!F2:F${refillTS.sheet.getLastRow()}`,
+            `'График.Платежей.${this.name}'!G2:G${refillTS.sheet.getLastRow()}`,
+            `'График.Платежей.${this.name}'!H2:H${refillTS.sheet.getLastRow()}`
         ],
         "План роста капитала",
         false,

@@ -81,8 +81,8 @@
           return;
         }
 
-        const price = parseFloat(document.getElementById("price").value);
-        const count = parseFloat(document.getElementById("count").value);
+        const price = parseFloat(document.getElementById("price").value.replace(",", "."));
+        const count = parseFloat(document.getElementById("count").value.replace(",", "."));
 
         if (isNaN(count) || count == null || count <= 0){
           alert("Количество должно быть больше 0!");

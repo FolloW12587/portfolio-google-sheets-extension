@@ -45,7 +45,7 @@
 
         for (var i in window.economy_sectors){
           var es = window.economy_sectors[i];
-          var ec_input_value = parseFloat(document.getElementById(es['id']).value);
+          var ec_input_value = parseFloat(document.getElementById(es['id']).value.replace(",", "."));
           data[es['id']] = ec_input_value;
           sum += ec_input_value;
         }

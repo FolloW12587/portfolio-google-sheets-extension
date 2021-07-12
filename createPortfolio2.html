@@ -46,7 +46,7 @@
 
         for (var i in window.symbol_types){
           var st = window.symbol_types[i];
-          var st_input_value = parseFloat(document.getElementById(st['id']).value);
+          var st_input_value = parseFloat(document.getElementById(st['id']).value.replace(",", "."));
           data[st['id']] = st_input_value;
           sum += st_input_value;
         }
