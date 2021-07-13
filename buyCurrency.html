@@ -151,7 +151,7 @@
         var currency = portfolio['amount'].filter((c) => portfolio['currency'] == c['code'])[0];
         
         var amount_node = document.getElementsByClassName("portfolio_currency_amount")[0];
-        amount_node.innerHTML = currency['sum'];
+        amount_node.innerHTML = Math.round(currency['sum']*100)/100;
         
         var symbol_node = document.getElementsByClassName("portfolio_currency_symbol")[0];
         symbol_node.innerHTML = currency_symbols[currency['code']];

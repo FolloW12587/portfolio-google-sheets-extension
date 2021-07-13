@@ -33,14 +33,14 @@
     
     var rates = [];
     for (var i in codesArray){
-        rates.push(getCurrencyRateToDollar(codesArray[i]));
+        rates.push(getCurrencyRateToDollar_(codesArray[i]));
     }
     
     var rate = rates[0] / rates[1];
     return rate;
 }
 
-function getCurrencyRateToDollar(code){
+function getCurrencyRateToDollar_(code){
     if (code == "USD")
         return 1;
     var backendAPI = new BackendAPI();

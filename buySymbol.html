@@ -229,7 +229,7 @@
             continue;
           
           currency = currency[0];
-          el.innerHTML = currency['sum'];
+          el.innerHTML = Math.round(currency['sum']*100)/100;
         }
       }
 

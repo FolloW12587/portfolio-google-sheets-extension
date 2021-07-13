@@ -156,11 +156,37 @@
         var html = `<div class="parameter"><div class="parameter_label">Тикер:</div><div class="parameter_value">${symbol['ticker']}</div></div>`;
         html += `<div class="parameter"><div class="parameter_label">ID Символа:</div><div class="parameter_value">${symbol['symbolId']}</div></div>`;
         html += `<div class="parameter"><div class="parameter_label">Наименование:</div><div class="parameter_value">${symbol['name']}</div></div>`;
+        html += `<div class="parameter"><div class="parameter_label">Валюта:</div><div class="parameter_value">${symbol['currency']}</div></div>`;
         html += `<div class="parameter"><div class="parameter_label">Количество имеется:</div><div class="parameter_value">${symbol['count']}</div></div>`;
         html += `<div class="parameter"><div class="parameter_label">Количество продать:</div><input type="text" class="parameter_value" id="count" value="1"></div>`;
-        html += `<div class="parameter"><div class="parameter_label">Цена:</div><input type="text" class="parameter_value" id="price" value="${symbol['price']}"></div>`;
+        if (symbol['currency'] == portfolio['currency'] || symbol['price_approved'] !== undefined){
+          html += `<div class="parameter"><div class="parameter_label">Цена:</div><input type="text" class="parameter_value" id="price" value="${symbol['price']}"></div>`;
+        } else {
+          html += `<div class="parameter"><div class="parameter_label">Цена:</div><input type="text" class="parameter_value" id="price" value="0">`;
+          html += '<img class="loading symbol_loading" src="https://acegif.com/wp-content/uploads/loading-25.gif" alt="loading"></div>';
+          get_symbols_price(symbol['symbolId']);
+        }
 
         document.getElementsByClassName("symbol")[0].innerHTML = html;
+      }
+
+      function get_symbols_price(symbol_id){
+        function acceprtSymbolsPrice(price){
+          for(var i in window.portfolios){
+            if (window.portfolios[i]['symbols'] !== undefined){
+              for (var j in window.portfolios[i]['symbols']){
+                if (window.portfolios[i]['symbols'][j]['symbolId'] == symbol_id){
+                  window.portfolios[i]['symbols'][j]['price'] = price;
+                  window.portfolios[i]['symbols'][j]['price_approved'] = true;
+                }
+              }
+            }
+          }
+          var selected_symbol_id = document.getElementById("symbol").value;
+          if (selected_symbol_id == symbol_id)
+            symbol_changed();
+        }
+        google.script.run.withSuccessHandler(acceprtSymbolsPrice).YARDOFFSYMBOL(symbol_id);
       }
 
       function acceptPortfolioSymbols(data){
@@ -178,7 +204,7 @@
       }
       
       function document_loaded(){
-        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortfolios()
+        google.script.run.withSuccessHandler(applyPortfolios).getExistingPortfolios();
       }
       
       document.addEventListener("DOMContentLoaded",  document_loaded);
