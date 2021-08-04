@@ -11,5 +11,13 @@
   "urlFetchWhitelist": [
     "https://larisa.yrdf.ru/"
   ],
-  "sheets":{}
+  "addOns":{
+    "common":{
+      "logoUrl": "https://larisa.yrdf.ru/static/home/img/logo32x32.png",
+      "name": "Таблица.Лариса"
+    },
+    "sheets":{
+      
+    }
+  }
 }
